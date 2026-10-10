@@ -24,7 +24,7 @@ worker/.venv/bin/python -m pip install -r worker/requirements.txt
 ```
 
 The dashboard runs without Supabase configuration, but sign-in is disabled and the database
-probe cannot report success. No AI or job-platform credentials are required in Phase 1.
+probe cannot report success. No AI or job-platform credentials are required in Phase 2.
 
 ## Local Supabase (recommended first)
 
@@ -37,7 +37,7 @@ worker/.venv/bin/python scripts/create_local_user.py
 
 `db:start` uses Supabase's official slim images from `ghcr.io`. It starts PostgreSQL,
 Auth, Data API, private Storage and the gateway. Studio, realtime, mail, analytics and edge
-functions are disabled because Phase 1 does not use them. Generated service credentials
+functions are disabled because this workflow does not use them. Generated service credentials
 are kept out of terminal output. A private diagnostic log is at `.local/supabase-command.log`.
 
 In this cloud machine, Docker's proxy-only client settings caused the slim images' BusyBox
@@ -61,8 +61,8 @@ npm run dev
 ```
 
 Open the local app on port 3000 in your browser, choose **Open secure workspace**, and sign
-in using your local account. Only a foundation screen is available; there are no fake
-statistics or job listings. Cloud onboarding does not provide a web preview.
+in using your local account. Start with Settings, upload your real resumes, then use Jobs
+and Applications. See [PHASE2.md](PHASE2.md). Cloud onboarding does not provide a web preview.
 
 ## Checks (new terminal at repository root)
 
@@ -75,11 +75,14 @@ npm run db:test
 (cd worker && .venv/bin/python main.py --health)
 (cd worker && .venv/bin/python main.py --check-database)
 worker/.venv/bin/python scripts/smoke_local.py
+worker/.venv/bin/python scripts/smoke_phase2.py
 ```
 
 The smoke test requires the dashboard on port 3000, a completed production build for the
 client-key scan, and local Supabase. It creates then deletes a temporary test account;
-it does not submit jobs or modify your account. Results identify each passed assertion.
+it does not submit jobs or modify your account. The Phase 2 test creates two isolated accounts,
+exercises real forms and private file access, then deletes its fixture files and accounts.
+Both tests reject hosted Supabase targets. Results identify each passed assertion.
 For a production server, stop your dev server and run `npm --prefix dashboard run start`.
 
 ## Hosted Supabase (optional)

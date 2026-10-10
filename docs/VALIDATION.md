@@ -1,118 +1,81 @@
-# Phase 1 validation
+# Validation
 
-Validated in the cloud machine on 9 October 2026. These results describe this machine,
-not a published snapshot, a hosted Supabase project, or a fresh task restoration.
+Phase 2 was validated in this cloud machine on **10 October 2026** against the included
+local Supabase PostgreSQL 17 stack. These results do not establish hosted deployment,
+environment publication, or restoration in a fresh task.
 
 | Check | Result |
 | --- | --- |
-| Root and dashboard frozen npm installs | Passed |
-| Complete reusable cloud installation script | Executed successfully |
-| Pinned Python install and dependency consistency | Passed |
 | ESLint | Passed, zero warnings |
-| TypeScript (including Next route type generation) | Passed |
-| Next.js production build | Passed |
-| Dashboard configuration tests | 9 passed |
+| TypeScript and Next route types | Passed |
+| Next production build | Passed; all authenticated workspace routes generated |
+| Dashboard unit tests | 24 passed: configuration, forms, date handling and document checks |
 | Python worker unit tests | 14 passed |
-| Python Ruff lint | Passed |
-| Initial migration | Applied to local Supabase PostgreSQL 17; pending-migration replay succeeded |
-| Database pgTAP suite | 58 passed; fixtures rolled back |
-| Local Supabase stop/start | Passed, data retained; Auth, Storage, gateway and database healthy |
-| Worker runtime health | Passed; automation disabled |
-| Worker database health | Passed, real read-only local PostgreSQL connection |
-| HTTP smoke test against development server | 20 assertions passed, including real sign-in and authenticated database health |
-| HTTP smoke test against production server | Same 20 assertions passed |
-| Hosted Supabase | Not configured or tested |
-| GitHub Actions workflow | Added; not run on GitHub |
-| Live job sources, AI, eligibility and submission workflows | Not implemented; later phases |
+| Ruff lint for worker/scripts | Passed |
+| Additive Phase 2 migrations | Applied locally; pending-migration replay passed without resetting data |
+| Database pgTAP suites | 104 passed: 58 foundation and 46 CRM assertions; fixtures rolled back |
+| Worker database probe | Passed using a real read-only local PostgreSQL connection |
+| Phase 2 development HTTP workflow | 74 assertions passed |
+| Production foundation HTTP workflow | 20 assertions passed, including sign-in and client-secret scan |
+| Phase 2 production HTTP workflow | 74 assertions passed |
+| Production Chromium workflow | 12 checks passed; no browser runtime errors |
+| Staged credential/private-output scan | Passed; no actual credentials or local generated outputs included |
+| GitHub Actions | Updated workflow; execution on GitHub not verified here |
+| Hosted Supabase and public deployment | Not configured, migrated or tested |
+| Eligibility, AI generation, provider submission and scheduler | Later phases; not implemented or tested |
 
-## Diagnosed and resolved setup failures
+HTTP checks use actual rendered Next Server Actions, Auth cookies, Supabase RLS and
+Storage APIs. They cover profile validation, private version uploads, duplicate cleanup,
+master changes, owner-only signed files, jobs/applications CRUD, search, optimistic edits,
+status history, manual confirmations, timezone counts, cross-owner access, CSRF rejection
+and deliberate deletion. The exact 10 MiB boundary passes; a file one byte larger is
+rejected before Storage. No employer or AI service is contacted.
 
-- Cloud npm cache and Supabase CLI home were unwritable. Setup uses an allowed temporary
-  npm cache and ignored local CLI directory.
-- The default PostgreSQL image could not unpack within available space. The pinned CLI's
-  official digest-pinned slim images fit and preserve verification.
-- Docker's proxy-only client config broke BusyBox localhost health requests. A separate
-  local-services Docker client config restores health checks without modifying the original
-  settings or disabling the daemon's registry proxy.
-- Disabling `auth.email.enable_signup` also disabled password sign-in in this CLI. The email
-  provider is enabled while global `auth.enable_signup=false` blocks public registration.
-- Next's umbrella ESLint configuration included plugins with older peer ranges. Direct
-  official Next and TypeScript ESLint plugins provide compatible ESLint 10 checks.
+Chromium checks cover real browser sign-in, failed-validation input preservation, profile
+saving, a private upload, browser confirmation for master selection, status saving, notes
+persisting after reload, real dashboard counts and the 375 px mobile layout. Desktop/mobile
+screenshots were inspected privately. The browser harness uses the cloud machine's existing
+Chromium/Playwright runtime and is not a required repository dependency or CI step.
 
-## Scope and remaining steps
+All HTTP and browser fixture files, Auth accounts, profiles, jobs, applications, activity
+and action budgets were deleted after each run. No real candidate details or resumes were
+supplied or invented. Fixture submission records are explicitly synthetic candidate reports;
+no application was sent to an employer. The production client JavaScript scan found no
+Supabase keys.
 
-Create your own local Auth account with the secure prompt helper (see SETUP), or configure
-and migrate your hosted Supabase project securely. No candidate account or real resumes
-were supplied or invented. The temporary HTTP test account and its data were removed.
-Local environment files are ignored and never include a dashboard admin key.
+## Issues caught and resolved
 
-Phase 2 profile settings, resume upload screens, job/application CRUD and real metrics
-remain unfinished by design. No job-platform or AI connection is claimed. No applications
-were submitted. Business-rule and concurrency test cases from later phases are unrun.
+- PostgreSQL interpreted a budget function variable named `current_time` as its SQL
+  time-only keyword. An additive migration renamed the variable, and shared budgets pass.
+- Notes edits originally used a preparation event label. Dedicated creation/edit events
+  now distinguish ordinary changes from before/after status transitions.
+- Next's default proxy body buffer did not include multipart overhead for the advertised
+  10 MiB file limit. Proxy and action limits are both 11 MiB, and the boundary was tested.
+- React automatically reset action forms after validation errors. The form component now
+  preserves typed input; Chromium verifies that a corrected profile can be saved.
+- Next can return HTTP 200 for a streamed not-found page. Access checks verify the not-found
+  result and absence of foreign content, in addition to RLS; file handlers return 404.
 
-Reusable cloud `install_script` and `start_skill` were saved to the environment draft.
-The temporary ECR allowlist addition was removed because the supported GitHub registry
-mirror works under the existing package-manager preset. No new credential requirements
-were saved. Review and save the draft in environment settings, then publish the environment
-if desired. Draft persistence does not establish publication or fresh-task restoration.
+Phase 1 was previously validated on 9 October 2026: frozen dependency installs, reusable
+installation script, local Supabase stop/start with health checks, 9 dashboard tests,
+14 worker tests, 58 SQL assertions and 20 HTTP assertions on both server modes passed.
+Its npm cache, slim-image, Docker localhost-proxy and password-provider setup fixes remain
+in place. See SETUP.md for those details.
 
-## Files created or modified
+## Changes and environment state
 
-Only the original `README.md` was modified; the following other tracked-source candidates
-were created. Local generated outputs (`.env.local`, worker `.env`, `.local`, `.next`,
-virtual environment, dependencies, `next-env.d.ts`) are ignored. `dashboard/AGENTS.md`
-was generated by Next.js and retained for future agent guidance.
+Phase 2 adds the authenticated workspace route group, shared forms, validation/document
+helpers, generated database types, three additive migrations, CRM SQL tests,
+`scripts/smoke_phase2.py` and `docs/PHASE2.md`. It updates the Supabase server typing,
+proxy, upload limits, public landing/health phase, styling, usage/security/architecture
+instructions and CI naming. The earlier dashboard route moved into the workspace group.
 
-```text
-.github/workflows/checks.yml
-.gitignore
-.nvmrc
-.python-version
-README.md
-dashboard/.env.example
-dashboard/AGENTS.md
-dashboard/eslint.config.mjs
-dashboard/next.config.ts
-dashboard/package-lock.json
-dashboard/package.json
-dashboard/postcss.config.mjs
-dashboard/src/app/api/health/database/route.ts
-dashboard/src/app/api/health/route.ts
-dashboard/src/app/dashboard/page.tsx
-dashboard/src/app/globals.css
-dashboard/src/app/layout.tsx
-dashboard/src/app/login/actions.ts
-dashboard/src/app/login/page.tsx
-dashboard/src/app/page.tsx
-dashboard/src/lib/supabase/config.test.ts
-dashboard/src/lib/supabase/config.ts
-dashboard/src/lib/supabase/server.ts
-dashboard/src/proxy.ts
-dashboard/tsconfig.json
-docs/ARCHITECTURE.md
-docs/DATABASE.md
-docs/OPERATIONS.md
-docs/SECURITY.md
-docs/SETUP.md
-docs/VALIDATION.md
-package-lock.json
-package.json
-scripts/configure-local.mjs
-scripts/create_local_user.py
-scripts/smoke_local.py
-scripts/supabase.mjs
-supabase/.gitignore
-supabase/config.toml
-supabase/migrations/20261009000100_foundation.sql
-supabase/tests/foundation.test.sql
-worker/.env.example
-worker/app/__init__.py
-worker/app/common/__init__.py
-worker/app/common/config.py
-worker/app/common/health.py
-worker/main.py
-worker/pyproject.toml
-worker/requirements.in
-worker/requirements.txt
-worker/tests/test_foundation.py
-```
+Secrets, private documents, local logs/screenshots, dependencies and build outputs are
+ignored and excluded from Git. No dependency declarations or lockfiles changed in Phase 2.
+The Python worker remains the foundation diagnostic CLI.
+
+Reusable cloud `start_skill` instructions were updated for Phase 2. The tested
+`install_script`, network policy and credential requirements were preserved. The draft
+was saved; publication and a new-task restoration are unverified. A real candidate account
+can be created through the secure local helper, then Settings and Resumes provide the
+first steps. Phase 3 begins when requested.

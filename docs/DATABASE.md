@@ -1,8 +1,14 @@
-# Database foundation
+# Database and CRM
 
 Migration: `supabase/migrations/20261009000100_foundation.sql`.
 It creates eight application tables in one transaction, indexes, owner policies,
 timestamp triggers, the health RPC, and a private `resumes` bucket.
+
+Phase 2 adds `20261010000100_candidate_crm.sql`, `20261010000200_crm_guardrails.sql`
+and `20261010000300_action_budget_clock.sql`. They preserve the foundation and existing
+records. Apply them in order using migration history. They add document metadata, immutable
+version guards, a single master per role, application notes, transactional audit events,
+real dashboard metrics, timezone conversion and shared action budgets.
 
 | Table | Purpose |
 | --- | --- |
@@ -14,6 +20,7 @@ timestamp triggers, the health RPC, and a private `resumes` bucket.
 | applications | One application per owner/job, selected resume, answers, status and confirmation evidence |
 | answer_library | Candidate-verified answers; sensitive categories always require review |
 | application_events | Append-only event history for authenticated users |
+| action_limits | Internal per-owner action budgets; no authenticated direct table privileges |
 
 Every table has a UUID key and `user_id` linked to Supabase Auth. Composite foreign keys
 prevent associating an owner's application with somebody else's job or resume. RLS is
@@ -23,7 +30,7 @@ deleting a parent/account can cascade events as part of eventual data deletion.
 
 Jobs deduplicate on `(user_id, source_platform, external_job_id)` when a source ID exists,
 and `(user_id, canonical_url)`. The canonical URL must be normalized by the future import
-engine; Phase 1 does not implement URL normalization or cross-source semantic matching.
+engine; Phase 2 does not implement URL normalization or cross-source semantic matching.
 
 Undisclosed salary amounts are NULL. `salary_min_annual`/`salary_max_annual` are normalized
 annual values; original amounts and `salary_period` preserve source units. Hourly rates
@@ -32,13 +39,39 @@ Neither is automatically converted by this migration.
 
 An ELIGIBLE check requires pass outcomes and source evidence. Submission/response/interview/
 offer statuses require `applied_at` and nonempty confirmation evidence. These constraints
-are a foundation, not proof that the contents are truthful; source confirmation validation,
-expiry checks, state transitions and transactional quota enforcement come in later phases.
+are not proof that the contents are truthful. Phase 2 records manual evidence as
+`candidate_reported`. Additional database guards reject future submission timestamps,
+prepared records without resumes and failures without reasons. These checks use NOT VALID
+to retain older rows while enforcing the rules on every new or updated record. Provider
+confirmation validation, expiry screening and executable submission transitions come later.
+
+Application inserts and updates create `record_created`, `record_updated` or `status_changed`
+events in the same transaction; status changes capture before/after states. Failed writes
+cannot create phantom events. The job foreign key uses NO ACTION so listing deletion cannot
+erase application history. Explicit application/account deletion still removes related events.
+
+`dashboard_metrics()` uses RLS and the authenticated owner. It computes day boundaries in
+the profile timezone, counts candidate reports separately, and requires submission dates
+for response counts. `local_time_to_utc(text)` converts local form inputs using the same
+timezone. Settings validate the timezone against both runtime and PostgreSQL timezone data.
 
 Documents must use `USER_UUID/version-specific-name.ext` inside the private bucket.
 PDF, plain text and DOCX are allowed up to 10 MiB. No Storage UPDATE policy exists:
-upload a new version instead of overwriting a master. Metadata changes and master selection
-will be managed in Phase 2; malware scanning/document extraction are not implemented.
+upload a new version instead of overwriting a master. All version metadata is immutable
+except master selection and its timestamp. `select_resume_master(uuid)` locks the owner's
+profile before changing masters, and a partial unique index enforces one master per role.
+If a pre-existing database has conflicting masters, the migration fails visibly for review
+rather than choosing a document. Registered Storage objects cannot be deleted through the
+owner's Storage policy. Malware scanning/document extraction are not implemented.
+
+The authenticated-only `consume_action_budget(text)` RPC updates an internal counter
+atomically and accepts only fixed action names/limits. It uses SECURITY DEFINER with an
+empty search path, derives the user from Auth and grants no direct user table writes.
+Budgets cover dashboard requests, not future submission quotas or the entire Data API.
+
+`dashboard/src/types/database.ts` was generated from the migrated local schema using the
+pinned CLI's `gen types typescript --local`. Regenerate deliberately after schema changes;
+do not regenerate tracked types as part of environment startup.
 
 ## Migration discipline
 
@@ -51,5 +84,5 @@ using Supabase CLI, inspect `migration list` and `db push --dry-run`, then delib
 apply `db push`. This workspace has not connected to or modified a hosted project.
 
 `npm run db:test` runs pgTAP assertions with synthetic, explicitly labelled fixtures in
-a transaction that rolls back. The HTTP smoke test creates and removes one isolated local
-Auth test account. Run those tests only against the included local development stack.
+a transaction that rolls back. HTTP tests create and remove isolated local Auth test
+accounts and their files. Run those tests only against the included local development stack.

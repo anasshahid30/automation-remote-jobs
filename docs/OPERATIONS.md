@@ -1,4 +1,4 @@
-# Phase 1 operations
+# Phase 2 operations
 
 From the existing repository checkout:
 
@@ -24,7 +24,7 @@ The worker is a CLI that exits after its diagnostic command:
 ```
 
 Exit 0 means the selected check passed; 1 means not configured/unavailable; 2 means invalid
-configuration. There is no background automation service to start in Phase 1.
+configuration. There is no background automation service to start in Phase 2.
 
 No live sources are connected and no applications are submitted. The candidate preference
 default is paused and the worker has no executable discovery/submission route. Leave this

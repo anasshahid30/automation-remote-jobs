@@ -12,7 +12,19 @@
   relationships fail even when a foreign UUID is known. Never grant browser users an admin
   role, and never put privileged keys in any `NEXT_PUBLIC_*` variable.
 - Resume documents are private. Storage object paths are owner-scoped and cannot be
-  overwritten through authenticated Storage policies. Signed URLs will be added with uploads.
+  overwritten through authenticated Storage policies. Each file view verifies Auth and
+  ownership before returning a signed URL valid for 60 seconds with no-store headers.
+  Registered file deletion is blocked by the owner Storage policy. Metadata is immutable;
+  master switches are serialized in the database and protected by a unique index.
+- Dashboard mutations validate bounded, whitelisted fields and use shared database request
+  budgets. Job and application updates/deletes require the displayed `updated_at` token.
+  Audit events are inserted in the same transaction as application changes. Deleting a
+  job cannot cascade away application history; the UI requires explicit application deletion.
+- File checks enforce extension/content signatures, UTF-8 text validity, basic DOCX ZIP
+  structure, macro/path checks and size limits. These are not a malware scan or complete
+  document parser. PDF previews use the browser viewer; other formats are downloads.
+- Manual confirmations are stored as `candidate_reported` and clearly labelled. No
+  provider verification is inferred from a CRM status, checkbox, or pasted receipt.
 - `.env*`, `.local/`, build outputs and virtual environments are ignored by Git. Local
   config files and CLI logs use private permissions. Never commit real resumes or secrets.
 - Local helpers consume generated local admin keys only for development account management
@@ -27,7 +39,7 @@ Future AI providers must produce schema-validated output and preserve verified f
 
 ## Not yet production-complete
 
-This foundation is not ready for live submissions. Provider permissions, resume scanning,
+This workspace is not ready for live submissions. Provider permissions, resume scanning,
 document generation, answer verification workflows, export/deletion UI, retention jobs,
 submission retries/quotas, per-source pause controls, structured operational logging and
 monitoring remain to be implemented and tested in their planned phases. The schema's

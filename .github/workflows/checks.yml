@@ -1,0 +1,30 @@
+name: Foundation checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: worker/requirements.txt
+      - run: npm --prefix dashboard ci
+      - run: npm --prefix dashboard run lint
+      - run: npm --prefix dashboard run typecheck
+      - run: npm --prefix dashboard test
+      - run: npm --prefix dashboard run build
+      - run: python -m pip install -r worker/requirements.txt
+      - run: ruff check worker scripts
+      - run: pytest
+        working-directory: worker
+      - run: python main.py --health
+        working-directory: worker

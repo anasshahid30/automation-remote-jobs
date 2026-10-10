@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+:root { color-scheme: light; }
+body { background: #f5f5f0; color: #182823; font-family: Arial, Helvetica, sans-serif; }
+a, button, input { outline-offset: 4px; }
+::selection { background: #c4e5d2; }

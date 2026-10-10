@@ -1,0 +1,20 @@
+{
+  "name": "automation-remote-jobs",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "db:start": "node scripts/supabase.mjs start",
+    "db:stop": "node scripts/supabase.mjs stop",
+    "db:migrate": "node scripts/supabase.mjs migration up --local",
+    "db:config": "node scripts/configure-local.mjs",
+    "db:test": "node scripts/supabase.mjs test db",
+    "dev": "npm --prefix dashboard run dev",
+    "check": "npm --prefix dashboard run lint && npm --prefix dashboard run typecheck && npm --prefix dashboard test"
+  },
+  "devDependencies": {
+    "supabase": "2.120.0"
+  }
+}

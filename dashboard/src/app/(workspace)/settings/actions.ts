@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { mutationContext } from "@/lib/workspace/auth";
+import { defaultWeights, weightsSchema } from "@/lib/screening/schema";
 import {
   failure,
   profileSchema,
@@ -37,17 +38,32 @@ export async function saveProfile(
       target_roles: form.getAll("target_roles"),
     });
     if (!parsed.success) return failure(parsed.error);
-    const { error } = await client
-      .from("candidate_profiles")
-      .upsert(
-        {
-          ...parsed.data,
-          user_id: user.id,
-          remote_only: true,
-          automation_enabled: false,
-        },
-        { onConflict: "user_id" },
-      );
+    const weightKeys = Object.keys(defaultWeights);
+    const weights = weightsSchema.safeParse(
+      Object.fromEntries(
+        weightKeys.map((key) => [
+          key,
+          form.get(`weight_${key}`) ??
+            defaultWeights[key as keyof typeof defaultWeights],
+        ]),
+      ),
+    );
+    if (!weights.success)
+      return {
+        message: "Scoring weights must be between 0 and 100 and total 100.",
+      };
+    const { error } = await client.from("candidate_profiles").upsert(
+      {
+        ...parsed.data,
+        ...(weightKeys.some((key) => form.has(`weight_${key}`))
+          ? { scoring_weights: weights.data }
+          : {}),
+        user_id: user.id,
+        remote_only: true,
+        automation_enabled: false,
+      },
+      { onConflict: "user_id" },
+    );
     if (error)
       return {
         message:
@@ -55,6 +71,9 @@ export async function saveProfile(
       };
     revalidatePath("/settings");
     revalidatePath("/dashboard");
+    revalidatePath("/jobs");
+    revalidatePath("/jobs/[id]", "page");
+    revalidatePath("/review");
     return { ok: true, message: "Profile saved. Automation remains paused." };
   } catch (error) {
     unstable_rethrow(error);

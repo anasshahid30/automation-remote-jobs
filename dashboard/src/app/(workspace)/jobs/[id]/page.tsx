@@ -5,6 +5,7 @@ import { uuid } from "@/lib/workspace/schemas";
 import { compensation } from "@/lib/workspace/format";
 import { JobForm } from "@/components/job-form";
 import { FormPanel } from "@/components/form-panel";
+import { ScreeningPanel } from "@/components/screening-panel";
 import { createApplication } from "@/app/(workspace)/applications/actions";
 import { deleteJob } from "../actions";
 
@@ -35,9 +36,7 @@ export default async function JobDetails({
     <>
       <p className="text-sm text-slate-600">{job.company_name}</p>
       <h1 className="page-title mt-2">{job.job_title}</h1>
-      <p className="mt-4 text-slate-600">
-        {compensation(job)} · Eligibility not assessed
-      </p>
+      <p className="mt-4 text-slate-600">{compensation(job)}</p>
       <div className="my-6 flex flex-wrap items-start gap-4">
         <a
           href={job.canonical_url}
@@ -72,6 +71,7 @@ export default async function JobDetails({
           {job.description}
         </p>
       </details>
+      <ScreeningPanel job={job} profile={profile} />
       <section className="panel">
         <h2 className="mb-6 text-xl font-semibold">Edit listing details</h2>
         <JobForm job={job} timezone={profile?.timezone ?? "Asia/Karachi"} />

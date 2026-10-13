@@ -2,7 +2,7 @@ import Link from "next/link";
 import { profileContext } from "@/lib/workspace/auth";
 import { pageHref, pageNumber, searchTerm } from "@/lib/workspace/data";
 import { compensation } from "@/lib/workspace/format";
-import { roles, roleLabels } from "@/lib/workspace/schemas";
+import { roleLabels } from "@/lib/workspace/schemas";
 
 export default async function Jobs({
   searchParams,
@@ -11,23 +11,57 @@ export default async function Jobs({
     q?: string;
     role?: string;
     status?: string;
+    source?: string;
+    region?: string;
+    decision?: string;
+    disposition?: string;
+    min_monthly?: string;
     page?: string;
   }>;
 }) {
-  const { client, user } = await profileContext();
+  const { client, user, profile } = await profileContext();
   const params = await searchParams,
     page = pageNumber(params.page),
     q = searchTerm(params.q);
   let query = client
-    .from("jobs")
+    .from("job_screening_summary")
     .select("*", { count: "exact" })
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
   if (q) query = query.ilike("job_title", `%${q}%`);
-  if ([...roles, "other"].includes(params.role ?? ""))
-    query = query.eq("role_category", params.role!);
-  if (["active", "closed", "expired", "unknown"].includes(params.status ?? ""))
-    query = query.eq("listing_status", params.status!);
+  const filters = {
+    role: ["backend", "ai_automation", "full_stack", "other"],
+    status: ["active", "closed", "expired", "unknown"],
+    source: [
+      "manual",
+      "linkedin",
+      "wellfound",
+      "greenhouse",
+      "lever",
+      "career_page",
+      "other",
+    ],
+    region: ["USA", "UK", "Europe", "Australia", "other", "unknown"],
+    decision: ["ELIGIBLE", "INELIGIBLE", "NEEDS_REVIEW"],
+    disposition: ["saved", "shortlisted", "rejected"],
+  };
+  const columns = {
+    role: "role_category",
+    status: "listing_status",
+    source: "source_platform",
+    region: "employer_region",
+    decision: "effective_decision",
+    disposition: "disposition",
+  } as const;
+  for (const key of Object.keys(filters) as (keyof typeof filters)[])
+    if (filters[key].includes(params[key] ?? ""))
+      query = query.eq(columns[key], params[key]!);
+  const pay = Number(params.min_monthly);
+  if (params.min_monthly && Number.isFinite(pay) && pay >= 0)
+    query = query
+      .gte("monthly_min_candidate", pay)
+      .eq("screening_currency", profile?.salary_currency ?? "USD")
+      .eq("screening_stale", false);
   const {
     data: jobs,
     count,
@@ -40,15 +74,19 @@ export default async function Jobs({
         <div>
           <h1 className="page-title">Saved jobs</h1>
           <p className="mt-3 text-slate-600">
-            {count ?? 0} matching listings · manually saved · screening starts
-            in Phase 3
+            {count ?? 0} matching listings · evidence-backed screening
           </p>
         </div>
-        <Link href="/jobs/new" className="button-primary self-start">
-          Add a listing
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/jobs/import" className="button-primary self-start">
+            Import listings
+          </Link>
+          <Link href="/jobs/new" className="button-secondary self-start">
+            Add a listing
+          </Link>
+        </div>
       </div>
-      <form className="panel my-8 grid gap-4 sm:grid-cols-4" method="get">
+      <form className="panel my-8 grid gap-4 sm:grid-cols-3" method="get">
         <div>
           <label htmlFor="q" className="mb-2 block text-sm font-semibold">
             Search job title
@@ -61,48 +99,64 @@ export default async function Jobs({
             maxLength={100}
           />
         </div>
+        {Object.entries(filters).map(([key, options]) => (
+          <div key={key}>
+            <label htmlFor={key} className="mb-2 block text-sm font-semibold">
+              {
+                (
+                  {
+                    role: "Role",
+                    status: "Listing status",
+                    source: "Source",
+                    region: "Employer region",
+                    decision: "Eligibility",
+                    disposition: "Search disposition",
+                  } as Record<string, string>
+                )[key]
+              }
+            </label>
+            <select
+              className="input"
+              id={key}
+              name={key}
+              defaultValue={params[key as keyof typeof params] ?? ""}
+            >
+              <option value="">All</option>
+              {options.map((value) => (
+                <option key={value} value={value}>
+                  {key === "role"
+                    ? roleLabels[value]
+                    : value.replaceAll("_", " ")}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
         <div>
-          <label htmlFor="role" className="mb-2 block text-sm font-semibold">
-            Role
-          </label>
-          <select
-            className="input"
-            id="role"
-            name="role"
-            defaultValue={params.role ?? ""}
+          <label
+            className="mb-2 block text-sm font-semibold"
+            htmlFor="min_monthly"
           >
-            <option value="">All roles</option>
-            {[...roles, "other"].map((role) => (
-              <option key={role} value={role}>
-                {roleLabels[role]}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="status" className="mb-2 block text-sm font-semibold">
-            Listing status
+            Minimum screened monthly ({profile?.salary_currency ?? "USD"})
           </label>
-          <select
+          <input
             className="input"
-            id="status"
-            name="status"
-            defaultValue={params.status ?? ""}
-          >
-            <option value="">All statuses</option>
-            {["active", "closed", "expired", "unknown"].map((status) => (
-              <option key={status}>{status}</option>
-            ))}
-          </select>
+            id="min_monthly"
+            name="min_monthly"
+            type="number"
+            min="0"
+            step="0.01"
+            defaultValue={params.min_monthly ?? ""}
+          />
         </div>
         <button className="button-secondary self-end">Filter listings</button>
       </form>
       {!jobs.length ? (
         <section className="panel">
-          <h2 className="font-semibold">No listings here yet</h2>
+          <h2 className="font-semibold">No listings in this view</h2>
           <p className="mt-3 text-slate-600">
-            Add an actual listing, or adjust your filters. No sample
-            opportunities are added to your account.
+            Import actual listings or adjust the filters. Unknown and stale
+            compensation is excluded from minimum-pay filters.
           </p>
         </section>
       ) : (
@@ -118,7 +172,16 @@ export default async function Jobs({
                   >
                     {job.job_title}
                   </Link>
-                  <p className="mt-3 text-sm">{compensation(job)}</p>
+                  <p className="mt-3 text-sm">
+                    {compensation({
+                      salary_min_original: job.salary_min_original,
+                      salary_max_original: job.salary_max_original,
+                      salary_min_annual: job.salary_min_annual,
+                      salary_max_annual: job.salary_max_annual,
+                      salary_period: job.salary_period ?? "unknown",
+                      salary_currency: job.salary_currency,
+                    })}
+                  </p>
                 </div>
                 <span className="badge">{job.listing_status}</span>
               </div>
@@ -126,8 +189,21 @@ export default async function Jobs({
                 <span className="badge">
                   {roleLabels[job.role_category ?? "other"]}
                 </span>
-                <span className="badge">{job.workplace_type}</span>
-                <span className="badge">Eligibility not assessed</span>
+                <span className="badge">{job.source_platform}</span>
+                <span className="badge">
+                  {job.effective_decision?.replaceAll("_", " ") ??
+                    "Not assessed"}
+                </span>
+                {job.match_score != null && (
+                  <span className="badge">Match {job.match_score}/100</span>
+                )}
+                {job.screening_stale && (
+                  <span className="badge">Recheck required</span>
+                )}
+                {Boolean(job.possible_duplicates) && (
+                  <span className="badge">Possible duplicate</span>
+                )}
+                <span className="badge">{job.disposition}</span>
               </div>
             </article>
           ))}

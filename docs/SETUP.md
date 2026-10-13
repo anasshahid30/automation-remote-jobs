@@ -24,7 +24,7 @@ worker/.venv/bin/python -m pip install -r worker/requirements.txt
 ```
 
 The dashboard runs without Supabase configuration, but sign-in is disabled and the database
-probe cannot report success. No AI or job-platform credentials are required in Phase 2.
+probe cannot report success. No AI or job-platform credentials are required for ordinary Phase 3 workflows.
 
 ## Local Supabase (recommended first)
 
@@ -62,7 +62,7 @@ npm run dev
 
 Open the local app on port 3000 in your browser, choose **Open secure workspace**, and sign
 in using your local account. Start with Settings, upload your real resumes, then use Jobs
-and Applications. See [PHASE2.md](PHASE2.md). Cloud onboarding does not provide a web preview.
+and Applications. See [PHASE2.md](PHASE2.md) and [PHASE3.md](PHASE3.md). Cloud onboarding does not provide a web preview.
 
 ## Checks (new terminal at repository root)
 
@@ -76,13 +76,15 @@ npm run db:test
 (cd worker && .venv/bin/python main.py --check-database)
 worker/.venv/bin/python scripts/smoke_local.py
 worker/.venv/bin/python scripts/smoke_phase2.py
+worker/.venv/bin/python scripts/smoke_phase3.py
 ```
 
 The smoke test requires the dashboard on port 3000, a completed production build for the
 client-key scan, and local Supabase. It creates then deletes a temporary test account;
 it does not submit jobs or modify your account. The Phase 2 test creates two isolated accounts,
 exercises real forms and private file access, then deletes its fixture files and accounts.
-Both tests reject hosted Supabase targets. Results identify each passed assertion.
+All tests reject hosted Supabase targets. The Phase 3 test also checks source evidence,
+current eligibility, concurrent retries and mocked classification copying. Results identify each passed assertion.
 For a production server, stop your dev server and run `npm --prefix dashboard run start`.
 
 ## Hosted Supabase (optional)
@@ -120,3 +122,7 @@ For a production server, stop your dev server and run `npm --prefix dashboard ru
 
 Use `npm run db:stop` to stop local services while preserving their data; do not use
 `db reset`, `stop --no-backup` or volume deletion against existing data.
+
+Optional AI classification needs explicit server configuration and per-request consent.
+See PHASE3.md for the key/model settings, privacy boundary and mocked-versus-live validation.
+Import and screening continue to work with AI disabled.

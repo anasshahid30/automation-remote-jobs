@@ -16,8 +16,11 @@ export async function toDatabaseTime(client: UserClient, local: string) {
 export function pageNumber(value?: string) {
   return Math.max(1, Math.min(10000, Number.parseInt(value ?? "1", 10) || 1));
 }
-export function searchTerm(value?: string) {
-  return (value ?? "").trim().slice(0, 100).replace(/[%_]/g, "");
+export function searchTerm(value?: string | string[]) {
+  return (Array.isArray(value) ? value[0] : (value ?? ""))
+    .trim()
+    .slice(0, 100)
+    .replace(/[%_]/g, "");
 }
 export function pageHref(
   path: string,

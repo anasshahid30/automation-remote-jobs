@@ -5,6 +5,9 @@ import { eventLabel, formatDate } from "@/lib/workspace/format";
 
 const metricsSchema = z.object({
   jobs: z.number(),
+  eligible_jobs: z.number(),
+  review_jobs: z.number(),
+  unassessed_jobs: z.number(),
   applications: z.number(),
   needs_review: z.number(),
   failed: z.number(),
@@ -58,6 +61,9 @@ export default async function Dashboard() {
       >
         {[
           ["Saved jobs", metrics.jobs],
+          ["Jobs eligible", metrics.eligible_jobs],
+          ["Jobs needing review", metrics.review_jobs],
+          ["Jobs unassessed", metrics.unassessed_jobs],
           ["Application records", metrics.applications],
           ["Needs review", metrics.needs_review],
           ["Manual submissions today", metrics.manual_today],

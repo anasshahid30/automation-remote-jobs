@@ -3,6 +3,7 @@ import { redirect, unstable_rethrow } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { mutationContext } from "@/lib/workspace/auth";
 import { toDatabaseTime } from "@/lib/workspace/data";
+import { normalizeListing } from "@/lib/screening/normalization";
 import {
   failure,
   jobSchema,
@@ -36,6 +37,7 @@ export async function saveJob(
         "salary_currency",
         "salary_period",
         "listing_status",
+        "employer_region",
         "expires_at",
       ]),
       eligible_countries: listText(
@@ -49,8 +51,16 @@ export async function saveJob(
     const { expires_at, ...data } = parsed.data;
     const hasPay =
       data.salary_min_original != null || data.salary_max_original != null;
+    const identity = normalizeListing(
+      data.canonical_url,
+      data.source_platform,
+      data.external_job_id,
+    );
     const payload = {
       ...data,
+      ...identity,
+      normalized_url: identity.canonical_url,
+      original_url: new URL(data.canonical_url).toString(),
       user_id: user.id,
       expires_at: await toDatabaseTime(client, expires_at),
       salary_currency: hasPay ? data.salary_currency : null,

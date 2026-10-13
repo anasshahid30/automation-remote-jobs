@@ -48,3 +48,30 @@ default pause setting does not replace future executable safety checks.
 Disable public Auth signups on a hosted personal project and create your account securely
 in its dashboard. Configure TLS, trusted redirect origins, backups, access restrictions,
 deployment secrets and production Auth rate limits before exposing the application.
+
+## Phase 3 boundaries
+
+Manual import never fetches arbitrary URLs. Batch fields are whitelisted and bounded.
+Normalized per-owner identities and database unique indexes prevent concurrent duplicate
+writes; title/company similarity is advisory and never merges records automatically.
+
+Reviews and classifications have RLS and owner-scoped foreign keys. Quoted evidence must
+be grounded in saved text. The assessment stores job/profile/master snapshots; an atomic
+RPC rejects changed inputs. Profile, source and resume changes invalidate current results,
+and a security-invoker view removes expired evidence from eligible counts. Individual gate
+results and historic reasons cannot be rewritten through ordinary authenticated UPDATEs.
+Owners still control their own data; records and quotations are not employer verification.
+
+The invalidation trigger is a trigger-only SECURITY DEFINER with empty search path. Its
+owner comes exclusively from an RLS-authorized NEW/OLD row, never RPC arguments. Execute
+is revoked from browser roles. This lets the separate Auth database role cascade account
+deletions without granting it access to public candidate tables; deleted profiles skip
+unnecessary invalidation. Real Auth API cleanup and database permission assertions cover it.
+
+AI receives only public job text after explicit candidate consent. Keys remain server-side;
+the provider endpoint is fixed HTTPS with redirects rejected, bounded retries/timeouts and
+structured-output validation. No candidate profile/resume data, tools or submission authority
+are supplied. Ungrounded quotes, extra decision fields and incomplete output are rejected.
+Suggestions can only become soft job fields after human confirmation. Geographic/legal/pay
+restrictions are recomputed separately; high scores and AI suggestions cannot override them.
+Live provider access and hosted production controls remain unverified in this local setup.

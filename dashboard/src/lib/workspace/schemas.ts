@@ -148,6 +148,9 @@ export const jobSchema = z
       .or(z.literal("")),
     salary_period: z.enum(["hourly", "monthly", "annual", "unknown"]),
     listing_status: z.enum(["active", "expired", "closed", "unknown"]),
+    employer_region: z
+      .enum(["USA", "UK", "Europe", "Australia", "other", "unknown"])
+      .default("unknown"),
     expires_at: localDateTime,
   })
   .superRefine((value, context) => {
@@ -240,4 +243,10 @@ export type ActionState = {
   message: string;
   ok?: boolean;
   errors?: Record<string, string[] | undefined>;
+  results?: {
+    id: string;
+    title: string;
+    created: boolean;
+    possible_duplicates: number;
+  }[];
 };

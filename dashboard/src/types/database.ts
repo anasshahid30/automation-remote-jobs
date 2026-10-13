@@ -171,6 +171,13 @@ export type Database = {
             foreignKeyName: "applications_job_id_user_id_fkey";
             columns: ["job_id", "user_id"];
             isOneToOne: false;
+            referencedRelation: "job_screening_summary";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "applications_job_id_user_id_fkey";
+            columns: ["job_id", "user_id"];
+            isOneToOne: false;
             referencedRelation: "jobs";
             referencedColumns: ["id", "user_id"];
           },
@@ -207,6 +214,7 @@ export type Database = {
           salary_currency: string;
           salary_min_monthly: number;
           salary_unknown_policy: string;
+          scoring_weights: NonNullable<Json>;
           sponsorship_preferences: string | null;
           target_regions: string[];
           target_roles: string[];
@@ -233,6 +241,7 @@ export type Database = {
           salary_currency?: string;
           salary_min_monthly?: number;
           salary_unknown_policy?: string;
+          scoring_weights?: NonNullable<Json>;
           sponsorship_preferences?: string | null;
           target_regions?: string[];
           target_roles?: string[];
@@ -258,6 +267,7 @@ export type Database = {
           salary_currency?: string;
           salary_min_monthly?: number;
           salary_unknown_policy?: string;
+          scoring_weights?: NonNullable<Json>;
           sponsorship_preferences?: string | null;
           target_regions?: string[];
           target_roles?: string[];
@@ -275,16 +285,22 @@ export type Database = {
           confidence: number;
           decision: string;
           evaluation_version: string;
+          evidence_snapshot: NonNullable<Json>;
           evidence_urls: string[];
           factors: NonNullable<Json>;
           id: string;
+          is_current: boolean;
           job_id: string;
+          job_updated_at: string | null;
           match_score: number;
           pakistan_eligibility: string;
+          profile_updated_at: string | null;
           reasons: string[];
           remote_check: string;
+          resume_snapshot: NonNullable<Json>;
           salary_check: string;
           user_id: string;
+          valid_until: string | null;
         };
         ComputedFields: never;
         Insert: {
@@ -292,36 +308,144 @@ export type Database = {
           confidence: number;
           decision: string;
           evaluation_version: string;
+          evidence_snapshot?: NonNullable<Json>;
           evidence_urls?: string[];
           factors?: NonNullable<Json>;
           id?: string;
+          is_current?: boolean;
           job_id: string;
+          job_updated_at?: string | null;
           match_score: number;
           pakistan_eligibility: string;
+          profile_updated_at?: string | null;
           reasons: string[];
           remote_check: string;
+          resume_snapshot?: NonNullable<Json>;
           salary_check: string;
           user_id?: string;
+          valid_until?: string | null;
         };
         Update: {
           checked_at?: string;
           confidence?: number;
           decision?: string;
           evaluation_version?: string;
+          evidence_snapshot?: NonNullable<Json>;
           evidence_urls?: string[];
           factors?: NonNullable<Json>;
           id?: string;
+          is_current?: boolean;
           job_id?: string;
+          job_updated_at?: string | null;
           match_score?: number;
           pakistan_eligibility?: string;
+          profile_updated_at?: string | null;
           reasons?: string[];
           remote_check?: string;
+          resume_snapshot?: NonNullable<Json>;
           salary_check?: string;
           user_id?: string;
+          valid_until?: string | null;
         };
         Relationships: [
           {
             foreignKeyName: "eligibility_checks_job_id_user_id_fkey";
+            columns: ["job_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "job_screening_summary";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "eligibility_checks_job_id_user_id_fkey";
+            columns: ["job_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "jobs";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
+      job_classifications: {
+        Row: {
+          created_at: string;
+          id: string;
+          job_id: string;
+          job_updated_at: string;
+          model: string;
+          provider: string;
+          suggestion: NonNullable<Json>;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          job_id: string;
+          job_updated_at: string;
+          model: string;
+          provider: string;
+          suggestion: NonNullable<Json>;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          job_id?: string;
+          job_updated_at?: string;
+          model?: string;
+          provider?: string;
+          suggestion?: NonNullable<Json>;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "job_classifications_job_id_user_id_fkey";
+            columns: ["job_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "job_screening_summary";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "job_classifications_job_id_user_id_fkey";
+            columns: ["job_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "jobs";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
+      job_reviews: {
+        Row: {
+          id: string;
+          job_id: string;
+          review: NonNullable<Json>;
+          reviewed_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          id?: string;
+          job_id: string;
+          review: NonNullable<Json>;
+          reviewed_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          id?: string;
+          job_id?: string;
+          review?: NonNullable<Json>;
+          reviewed_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "job_reviews_job_id_user_id_fkey";
+            columns: ["job_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "job_screening_summary";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "job_reviews_job_id_user_id_fkey";
             columns: ["job_id", "user_id"];
             isOneToOne: false;
             referencedRelation: "jobs";
@@ -336,7 +460,10 @@ export type Database = {
           created_at: string;
           description: string;
           discovered_at: string;
+          disposition: string;
+          duplicate_key: string | null;
           eligible_countries: string[];
+          employer_region: string;
           employment_type: string | null;
           expires_at: string | null;
           external_job_id: string | null;
@@ -344,6 +471,8 @@ export type Database = {
           job_title: string;
           last_checked_at: string | null;
           listing_status: string;
+          normalized_url: string;
+          original_url: string | null;
           posted_at: string | null;
           raw_metadata: NonNullable<Json>;
           remote_scope: string;
@@ -368,7 +497,10 @@ export type Database = {
           created_at?: string;
           description: string;
           discovered_at?: string;
+          disposition?: string;
+          duplicate_key?: never;
           eligible_countries?: string[];
+          employer_region?: string;
           employment_type?: string | null;
           expires_at?: string | null;
           external_job_id?: string | null;
@@ -376,6 +508,8 @@ export type Database = {
           job_title: string;
           last_checked_at?: string | null;
           listing_status?: string;
+          normalized_url?: string;
+          original_url?: string | null;
           posted_at?: string | null;
           raw_metadata?: NonNullable<Json>;
           remote_scope?: string;
@@ -399,7 +533,10 @@ export type Database = {
           created_at?: string;
           description?: string;
           discovered_at?: string;
+          disposition?: string;
+          duplicate_key?: never;
           eligible_countries?: string[];
+          employer_region?: string;
           employment_type?: string | null;
           expires_at?: string | null;
           external_job_id?: string | null;
@@ -407,6 +544,8 @@ export type Database = {
           job_title?: string;
           last_checked_at?: string | null;
           listing_status?: string;
+          normalized_url?: string;
+          original_url?: string | null;
           posted_at?: string | null;
           raw_metadata?: NonNullable<Json>;
           remote_scope?: string;
@@ -541,17 +680,79 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      job_screening_summary: {
+        Row: {
+          canonical_url: string | null;
+          check_id: string | null;
+          checked_at: string | null;
+          company_name: string | null;
+          created_at: string | null;
+          description: string | null;
+          discovered_at: string | null;
+          disposition: string | null;
+          duplicate_key: string | null;
+          effective_decision: string | null;
+          eligible_countries: string[] | null;
+          employer_region: string | null;
+          employment_type: string | null;
+          expires_at: string | null;
+          external_job_id: string | null;
+          id: string | null;
+          job_title: string | null;
+          last_checked_at: string | null;
+          listing_status: string | null;
+          match_score: number | null;
+          monthly_min_candidate: number | null;
+          normalized_url: string | null;
+          original_url: string | null;
+          possible_duplicates: number | null;
+          posted_at: string | null;
+          raw_metadata: Json | null;
+          reasons: string[] | null;
+          remote_scope: string | null;
+          restricted_countries: string[] | null;
+          role_category: string | null;
+          salary_currency: string | null;
+          salary_max_annual: number | null;
+          salary_max_original: number | null;
+          salary_min_annual: number | null;
+          salary_min_original: number | null;
+          salary_period: string | null;
+          screening_currency: string | null;
+          screening_stale: boolean | null;
+          seniority: string | null;
+          source_platform: string | null;
+          updated_at: string | null;
+          user_id: string | null;
+          workplace_type: string | null;
+        };
+        ComputedFields: never;
+        Relationships: [];
+      };
     };
     Functions: {
       consume_action_budget: { Args: { p_action: string }; Returns: boolean };
       dashboard_metrics: { Args: Record<PropertyKey, never>; Returns: Json };
       database_health: { Args: Record<PropertyKey, never>; Returns: string };
+      import_jobs: { Args: { p_jobs: Json }; Returns: Json };
       local_time_to_utc: { Args: { p_value: string }; Returns: string };
+      normalize_job_url: { Args: { p_url: string }; Returns: string };
+      record_job_screening: {
+        Args: {
+          p_job_id: string;
+          p_job_updated_at: string;
+          p_profile_updated_at: string;
+          p_result: Json;
+          p_resume_snapshot: Json;
+          p_review: Json;
+        };
+        Returns: string;
+      };
       select_resume_master: {
         Args: { p_resume_id: string };
         Returns: undefined;
       };
+      valid_scoring_weights: { Args: { p_weights: Json }; Returns: boolean };
     };
     Enums: {
       [_ in never]: never;

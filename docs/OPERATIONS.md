@@ -1,4 +1,4 @@
-# Phase 2 operations
+# Phase 3 operations
 
 From the existing repository checkout:
 
@@ -24,7 +24,7 @@ The worker is a CLI that exits after its diagnostic command:
 ```
 
 Exit 0 means the selected check passed; 1 means not configured/unavailable; 2 means invalid
-configuration. There is no background automation service to start in Phase 2.
+configuration. There is no background automation service to start in Phase 3.
 
 No live sources are connected and no applications are submitted. The candidate preference
 default is paused and the worker has no executable discovery/submission route. Leave this
@@ -35,3 +35,13 @@ Do not share raw environment files, Supabase CLI logs or private documents. Stor
 secrets securely in environment settings; a saved draft is separate from runtime configuration.
 
 See `docs/VALIDATION.md` for the results obtained in the cloud machine and remaining limits.
+
+Pending Phase 3 migrations add normalized identities, review/classification tables, snapshot
+guards and expiry-aware summaries. Never edit an already-applied migration or reset data to
+clear a collision. A normalized-identity collision must be reviewed deliberately. Source
+checks expire after seven days (earlier for old FX quotes); changed facts invalidate them.
+Use the Review queue and record new candidate-checked quotations.
+
+GitHub Actions defines lint/types/unit/build, local Supabase migrations/SQL assertions,
+worker checks and Phases 1–3 production HTTP workflows. CI creates/deletes isolated test
+accounts; no hosted migration, real candidate update or employer submission is performed.

@@ -1,5 +1,64 @@
 # Validation
 
+Phase 3 was validated in this cloud machine on **13 October 2026** against local
+Supabase PostgreSQL 17. Phases 1 and 2 remain in the regression suite.
+
+| Phase 3 release check | Result |
+| --- | --- |
+| ESLint and TypeScript | Passed, zero lint warnings |
+| Next.js production build | Passed, including import and review routes |
+| Dashboard unit tests | 77 passed: 24 earlier tests plus 53 screening/import/provider tests |
+| Python worker tests | 14 passed; worker remains diagnostic |
+| Ruff worker/script lint | Passed |
+| All database suites | 156 passed: 104 earlier assertions plus 52 Phase 3 assertions |
+| Four additive Phase 3 migrations | Applied locally; pending-migration replay passed; no reset |
+| Development HTTP regression | Phase 2: 74 passed; Phase 3: 65 passed |
+| Production HTTP regression, Phase 1 | 20 passed |
+| Production HTTP regression, Phase 2 | 74 passed |
+| Production HTTP regression, Phase 3 | 65 passed |
+| Production Chromium workflow | 14 passed; actual review content/mobile layout checked; no runtime errors |
+| Client Supabase key scan | Passed on the new production build |
+| GitHub Actions | Defines local database and Phases 1–3 HTTP regressions; remote execution not verified here |
+| Live AI provider | Unconfigured; contract/error behavior tested with mocked responses |
+| Hosted deployment/migrations | Not performed or verified |
+| Real job-platform submissions | None; no adapter or scheduler implemented |
+
+The final production HTTP run executed **159 assertions** across all three phases. It used
+real rendered actions, Auth cookies, RLS, Storage and transactional RPCs. Concurrent tests
+proved one imported listing and one application record across retries. Source quotations,
+score factors, normalized pay, country restrictions, review/filter counts, profile/master
+invalidation, stale form rejection and mocked suggestion copying were exercised. AI output
+cannot override the country exclusion. All isolated accounts, files and records were removed.
+
+Screening unit tests cover fully remote international contracting, US/U.S./residency-only
+exclusions, unknown scope and salary, closure/expiry, annual/monthly/hourly equivalents,
+explicit FX and expiry, missing skills, seniority, mandatory qualifications, authorization,
+configurable weights, negations and optional-versus-mandatory office visits. A range upper
+value copied into the minimum field cannot count as proof of a guaranteed minimum.
+
+Browser checks exercised real import and source-review forms, individual score factors,
+changing facts resetting source confirmation, hard exclusion despite a high score, and
+an actual unresolved record in the mobile queue. Private screenshots were inspected.
+The harness uses this machine's existing Chromium/Playwright runtime and is not a repository
+or CI dependency. Provider tests reject ungrounded/extra fields, incomplete/oversized output,
+handle bounded rate-limit retries, and never echo a credential-bearing provider error.
+
+A real integration test caught Auth account deletion failing because an invoker trigger
+required public-table access from Supabase's separate Auth database role. A trigger-only
+SECURITY DEFINER derives ownership from the authorized row, has empty search path and no
+browser EXECUTE grant, and skips deleted profiles. Actual Auth API deletion and SQL
+permission/cascade assertions now pass; the two failed-run fixture accounts were removed.
+SQL role impersonation was unavailable; no privilege was loosened to simulate it.
+
+Cloud `start_skill` was saved for Phase 3. Installation, network and credential requirements
+were preserved. The draft has not been published or restored in a new task. Read PHASE3.md
+for usage, decision meanings, source provenance, optional AI configuration and boundaries.
+Automatic resume selection/tailoring, verified screening answers, submission adapters and
+scheduler/daily submission quotas remain in their later phases. No fake opportunities or
+candidate facts were added to a real account, and no employer was contacted.
+
+The historical Phase 2 results below describe its earlier release.
+
 Phase 2 was validated in this cloud machine on **10 October 2026** against the included
 local Supabase PostgreSQL 17 stack. These results do not establish hosted deployment,
 environment publication, or restoration in a fresh task.

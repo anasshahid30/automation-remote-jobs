@@ -15,7 +15,7 @@ export const requireUser = cache(async () => {
 });
 
 export async function mutationContext(
-  kind: "upload" | "mutation" = "mutation",
+  kind: "upload" | "mutation" | "classification" = "mutation",
 ) {
   const context = await requireUser();
   const { data, error } = await context.client.rpc("consume_action_budget", {

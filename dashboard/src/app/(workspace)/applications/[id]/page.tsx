@@ -47,6 +47,13 @@ export default async function ApplicationDetails({
   if (resumeError || eventError)
     throw new Error("Application details could not be loaded.");
   const timezone = profile?.timezone ?? "Asia/Karachi";
+  const { data: screening, error: screeningError } = await client
+    .from("job_screening_summary")
+    .select("effective_decision,screening_stale")
+    .eq("id", app.job_id)
+    .eq("user_id", user.id)
+    .single();
+  if (screeningError) throw new Error("Eligibility could not be loaded.");
   return (
     <>
       <p className="text-sm text-slate-600">{app.jobs.company_name}</p>
@@ -55,7 +62,10 @@ export default async function ApplicationDetails({
         {app.submission_method === "human_assisted"
           ? "Human-assisted record"
           : "Integration record"}{" "}
-        · Eligibility not assessed · Times use {timezone}
+        ·{" "}
+        {screening.effective_decision?.replaceAll("_", " ") ??
+          "Eligibility not assessed"}{" "}
+        · Times use {timezone}
       </p>
       <div className="my-6 flex flex-wrap gap-3">
         <a

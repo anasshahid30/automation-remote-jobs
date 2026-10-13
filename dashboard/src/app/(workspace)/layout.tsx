@@ -38,6 +38,7 @@ export default async function WorkspaceLayout({
             {[
               ["/dashboard", "Overview"],
               ["/jobs", "Jobs"],
+              ["/review", "Review queue"],
               ["/applications", "Applications"],
               ["/resumes", "Resumes"],
               ["/settings", "Settings"],

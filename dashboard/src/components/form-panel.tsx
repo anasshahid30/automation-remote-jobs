@@ -1,5 +1,6 @@
 "use client";
 import { useActionState } from "react";
+import Link from "next/link";
 import type { ActionState } from "@/lib/workspace/schemas";
 
 export function FormPanel({
@@ -50,6 +51,28 @@ export function FormPanel({
             </ul>
           )}
         </div>
+      )}
+      {state.results && (
+        <ul className="space-y-3">
+          {state.results.map((row, index) => (
+            <li key={`${row.id}-${index}`} className="rounded-lg border p-3">
+              <Link
+                className="font-semibold text-emerald-800 underline"
+                href={`/jobs/${row.id}`}
+              >
+                {row.title}
+              </Link>
+              <p className="mt-1 text-sm">
+                {row.created
+                  ? "Imported"
+                  : "Already saved; existing data preserved"}
+                {row.possible_duplicates > 0
+                  ? ` · ${row.possible_duplicates} possible duplicate(s) to review`
+                  : ""}
+              </p>
+            </li>
+          ))}
+        </ul>
       )}
       <button
         disabled={pending}

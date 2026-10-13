@@ -2,6 +2,7 @@ import { profileContext } from "@/lib/workspace/auth";
 import { FormPanel } from "@/components/form-panel";
 import { Field, TextArea, TextField, SelectField } from "@/components/fields";
 import { roles, roleLabels } from "@/lib/workspace/schemas";
+import { defaultWeights, weightsSchema } from "@/lib/screening/schema";
 import { saveProfile } from "./actions";
 
 function Choices({
@@ -39,6 +40,8 @@ function Choices({
 }
 export default async function Settings() {
   const { profile, user } = await profileContext();
+  const parsedWeights = weightsSchema.safeParse(profile?.scoring_weights);
+  const weights = parsedWeights.success ? parsedWeights.data : defaultWeights;
   return (
     <>
       <h1 className="page-title">Candidate settings</h1>
@@ -178,6 +181,37 @@ export default async function Settings() {
             options={roles.map((value) => [value, roleLabels[value]])}
             selected={profile?.target_roles ?? [...roles]}
           />
+          <fieldset className="rounded-lg border p-5">
+            <legend className="px-2 font-semibold">
+              Match score weights (total 100)
+            </legend>
+            <p className="mb-4 text-sm text-slate-600">
+              Adjust relevance, seniority, geography, compensation and
+              employment importance. Failed requirements always override the
+              score. Changing settings invalidates earlier screening.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {Object.entries(weights).map(([key, value]) => (
+                <Field
+                  key={key}
+                  name={`weight_${key}`}
+                  label={key.charAt(0).toUpperCase() + key.slice(1)}
+                >
+                  <input
+                    className="input"
+                    type="number"
+                    id={`weight_${key}`}
+                    name={`weight_${key}`}
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    required
+                    defaultValue={value}
+                  />
+                </Field>
+              ))}
+            </div>
+          </fieldset>
           <p className="rounded-lg bg-emerald-50 p-4 text-sm">
             Fully remote only. Automation is paused; this phase does not submit
             applications.

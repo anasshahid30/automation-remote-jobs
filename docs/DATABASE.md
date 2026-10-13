@@ -86,3 +86,35 @@ apply `db push`. This workspace has not connected to or modified a hosted projec
 `npm run db:test` runs pgTAP assertions with synthetic, explicitly labelled fixtures in
 a transaction that rolls back. HTTP tests create and remove isolated local Auth test
 accounts and their files. Run those tests only against the included local development stack.
+
+## Phase 3 additions
+
+Apply `20261013000100_import_and_screening.sql`, `20261013000200_screening_integrity.sql`,
+`20261013000300_cascade_safe_invalidation.sql` and
+`20261013000400_screening_freshness_and_ai_budget.sql` in migration order.
+
+Jobs gain original/normalized URLs, employer region, search disposition and a generated
+company/title fingerprint. `normalize_job_url(text)` and its row trigger enforce identity
+for direct API writes too. A normalized collision in existing data stops migration visibly
+for review; no listings or application histories are silently discarded.
+
+`import_jobs(jsonb)` uses authenticated owner identity and a 1–20 row transaction. Unique
+indexes serialize duplicate races; conflicting URL/source matches abort the whole batch.
+Existing data is returned without being overwritten. `job_reviews` retains the latest
+review input and `job_classifications` stores owner-only, version-bound model suggestions.
+
+Eligibility history gains current flags, job/profile revisions, master and evidence snapshots
+and expiry. `record_job_screening` locks the job/profile, compares the input snapshot and
+commits review/history together. Ordinary users may update the current flag but cannot
+rewrite score/reason history or expiry. Trigger invalidation and profile/master/version checks
+in `job_screening_summary` guard against stale positives. Checks expire after seven days,
+sooner if a dated FX conversion expires. Closed/expired jobs override earlier positives.
+
+The security-invoker summary retains RLS, supports all review/filter counts and exposes
+monthly equivalents in the evaluated profile currency only while current. These values
+live with the assessment, keeping original published pay untouched. `dashboard_metrics`
+adds eligible, needs-review and unassessed job counts without fabricating verified submissions.
+
+Auth cascades invoke a locked-down trigger-only definer for invalidation; it derives owner
+identity from the modified table row and skips deleted profiles. No broad Auth-role grants
+were added. The internal action budget now includes 10 classifier attempts/hour.

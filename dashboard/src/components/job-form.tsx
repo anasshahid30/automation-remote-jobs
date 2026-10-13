@@ -44,12 +44,25 @@ export function JobForm({
         name="canonical_url"
         label="Original listing URL"
         type="url"
-        value={job?.canonical_url}
+        value={job?.original_url ?? job?.canonical_url}
         maxLength={2048}
         required
         help="HTTPS only. Saving a URL does not fetch the website or connect an integration."
       />
       <div className="grid gap-5 sm:grid-cols-2">
+        <SelectField
+          name="employer_region"
+          label="Employer region (if evidenced)"
+          value={job?.employer_region ?? "unknown"}
+          options={options([
+            "unknown",
+            "USA",
+            "UK",
+            "Europe",
+            "Australia",
+            "other",
+          ])}
+        />
         <SelectField
           name="source_platform"
           label="Listing source"

@@ -802,6 +802,98 @@ export type Database = {
         };
         Relationships: [];
       };
+      submission_controls: {
+        Row: {
+          paused: boolean;
+          scope: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          paused?: boolean;
+          scope: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          paused?: boolean;
+          scope?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      submission_runs: {
+        Row: {
+          application_id: string;
+          created_at: string;
+          id: string;
+          input_snapshot: NonNullable<Json>;
+          mode: string;
+          outcome_at: string | null;
+          outcome_note: string | null;
+          package_id: string;
+          report: NonNullable<Json>;
+          request_id: string;
+          source_platform: string;
+          source_url: string;
+          state: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          application_id: string;
+          created_at?: string;
+          id?: string;
+          input_snapshot: NonNullable<Json>;
+          mode: string;
+          outcome_at?: string | null;
+          outcome_note?: string | null;
+          package_id: string;
+          report: NonNullable<Json>;
+          request_id: string;
+          source_platform: string;
+          source_url: string;
+          state: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          application_id?: string;
+          created_at?: string;
+          id?: string;
+          input_snapshot?: NonNullable<Json>;
+          mode?: string;
+          outcome_at?: string | null;
+          outcome_note?: string | null;
+          package_id?: string;
+          report?: NonNullable<Json>;
+          request_id?: string;
+          source_platform?: string;
+          source_url?: string;
+          state?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "submission_runs_application_id_user_id_fkey";
+            columns: ["application_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "applications";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "submission_runs_package_id_user_id_fkey";
+            columns: ["package_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "application_packages";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
     };
     Views: {
       job_screening_summary: {
@@ -862,6 +954,15 @@ export type Database = {
       consume_action_budget: { Args: { p_action: string }; Returns: boolean };
       dashboard_metrics: { Args: Record<PropertyKey, never>; Returns: Json };
       database_health: { Args: Record<PropertyKey, never>; Returns: string };
+      finish_submission_handoff: {
+        Args: {
+          p_applied_at?: string;
+          p_note: string;
+          p_outcome: string;
+          p_run_id: string;
+        };
+        Returns: undefined;
+      };
       import_jobs: { Args: { p_jobs: Json }; Returns: Json };
       local_time_to_utc: { Args: { p_value: string }; Returns: string };
       normalize_job_url: { Args: { p_url: string }; Returns: string };
@@ -890,6 +991,17 @@ export type Database = {
         };
         Returns: string;
       };
+      record_submission_run: {
+        Args: {
+          p_application_id: string;
+          p_mode: string;
+          p_package_id: string;
+          p_report: Json;
+          p_request_id: string;
+          p_snapshot: Json;
+        };
+        Returns: string;
+      };
       review_application_package: {
         Args: { p_application_updated_at: string; p_package_id: string };
         Returns: undefined;
@@ -897,6 +1009,10 @@ export type Database = {
       select_resume_master: {
         Args: { p_resume_id: string };
         Returns: undefined;
+      };
+      submission_snapshot: {
+        Args: { p_application_id: string; p_package_id: string };
+        Returns: Json;
       };
       valid_scoring_weights: { Args: { p_weights: Json }; Returns: boolean };
     };

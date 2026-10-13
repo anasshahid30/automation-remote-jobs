@@ -90,6 +90,12 @@ export default async function ApplicationDetails({
         <Link href={`/applications/${id}/prepare`} className="button-secondary">
           Prepare application package
         </Link>
+        <Link
+          href={`/applications/${id}/submission`}
+          className="button-primary"
+        >
+          Validate and start handoff
+        </Link>
         {app.resume_id && (
           <Link
             href={`/resumes/${app.resume_id}/file`}
@@ -121,7 +127,8 @@ export default async function ApplicationDetails({
                 className="underline"
                 href={`/applications/${id}/packages/${pack.id}`}
               >
-                Preview version {pack.id.slice(0,8)} · {formatDate(pack.created_at, timezone)}
+                Preview version {pack.id.slice(0, 8)} ·{" "}
+                {formatDate(pack.created_at, timezone)}
               </Link>
             </li>
           ))}

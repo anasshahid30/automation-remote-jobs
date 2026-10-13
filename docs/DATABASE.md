@@ -139,3 +139,21 @@ edits serialize with package writes; the answer-delete trigger is a revoked, tri
 definer to handle Auth cascades without broad permissions. Candidate-authored Data API
 content is not independent provider verification: future submission adapters must recompute
 eligibility and validate factual content rather than trust stored owner-writable labels.
+
+## Phase 5 additions
+
+Migration `20261013001000_submission_handoffs.sql` adds owner-only `submission_controls`
+and `submission_runs`. Global pause is the default. Runs allow only dry checks or manual
+handoffs; ordinary clients have SELECT-only access. Restricted owner-authenticated RPCs
+lock current inputs, check package/screening revisions, create attempts and audit events,
+and apply actual candidate-reported outcomes. No authenticated RPC can create an API mode
+or provider-verified state. Application/request identity is bound to idempotent retries.
+
+A partial unique index prevents multiple ready, uncertain or candidate-reported handoffs
+per application. Explicit cancellation permits a new claim; uncertainty never expires
+into an automatic retry. Manual tracker confirmations reconcile an open handoff. Foreign
+keys preserve history if an individual application/package deletion is attempted; Auth
+account deletion still cascades all private records. SQL and real Auth API tests cover it.
+`submission_snapshot` is a revision fingerprint, not proof of externally verified facts.
+Stored owner-supplied reports remain advisory: future live adapters must compute trusted
+validation themselves rather than reuse browser-writable inputs or reports as permission.

@@ -78,6 +78,7 @@ worker/.venv/bin/python scripts/smoke_local.py
 worker/.venv/bin/python scripts/smoke_phase2.py
 worker/.venv/bin/python scripts/smoke_phase3.py
 worker/.venv/bin/python scripts/smoke_phase4.py
+worker/.venv/bin/python scripts/smoke_phase5.py
 ```
 
 The smoke test requires the dashboard on port 3000, a completed production build for the
@@ -127,3 +128,8 @@ Use `npm run db:stop` to stop local services while preserving their data; do not
 Optional AI classification needs explicit server configuration and per-request consent.
 See PHASE3.md for the key/model settings, privacy boundary and mocked-versus-live validation.
 Import and screening continue to work with AI disabled.
+
+Phase 5 requires no new dependency or credential. Apply pending migrations with
+`npm run db:migrate` and follow [the handoff walkthrough](PHASE5.md). No employer-approved
+API access was available during setup, so the supported route is the candidate-operated
+official form. API policy/receipt behavior is tested only with a local mock.

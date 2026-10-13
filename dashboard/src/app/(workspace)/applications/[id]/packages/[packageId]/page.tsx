@@ -77,7 +77,7 @@ export default async function Preview({
     <>
       <h1 className="page-title">Application preview</h1>
       <p className="mt-3 text-slate-600">
-        {p.title} · {p.company} · Version {pack.id.slice(0,8)} ·{" "}
+        {p.title} · {p.company} · Version {pack.id.slice(0, 8)} ·{" "}
         {formatDate(pack.created_at, profile?.timezone)}
       </p>
       <div className="panel mt-6">
@@ -128,6 +128,12 @@ export default async function Preview({
         <Link className="button-secondary" href={`/applications/${id}`}>
           Application record
         </Link>
+        <Link
+          className="button-primary"
+          href={`/applications/${id}/submission`}
+        >
+          Validate and start handoff
+        </Link>
       </div>
       <section className="panel">
         <h2 className="mb-4 text-xl font-semibold">Tailored cover letter</h2>
@@ -158,7 +164,10 @@ export default async function Preview({
               {a.requires_review
                 ? "Review required"
                 : "Routine verified information"}{" "}
-              · {a.source.startsWith("Verified answer ") ? "Candidate-verified answer library" : a.source}
+              ·{" "}
+              {a.source.startsWith("Verified answer ")
+                ? "Candidate-verified answer library"
+                : a.source}
             </p>
           </article>
         ))}

@@ -92,3 +92,16 @@ are supplied. Ungrounded quotes, extra decision fields and incomplete output are
 Suggestions can only become soft job fields after human confirmation. Geographic/legal/pay
 restrictions are recomputed separately; high scores and AI suggestions cannot override them.
 Live provider access and hosted production controls remain unverified in this local setup.
+
+Phase 5 handoff actions authenticate independently, enforce owner filtering/RLS and validate
+current source revisions. Exact regeneration rejects injected package claims; private source
+checksums and current eligibility are checked before handoff. Global/source pauses serialize
+with claim creation. Run history cannot be directly inserted, rewritten or erased through
+the authenticated Data API. Only candidate-reported receipts can update the manual tracker.
+A receipt is an explicit user report, not independent verification that an employer received it.
+
+No runtime API adapter or external form automation is configured. The mock lifecycle rejects
+bare HTTP 200 responses and mismatched/missing/future/stale receipts, reserves before dispatch,
+and retains claims after uncertain network or audit-storage failures. It performs no automatic
+retry. This is a contract for a future authorized integration, not a deployed submission service.
+Open official links are candidate-controlled navigation; the application does not fetch them.

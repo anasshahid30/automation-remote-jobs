@@ -1,5 +1,40 @@
 # Validation
 
+Phase 5 was validated on **13 October 2026** against local Supabase PostgreSQL 17 and
+the Next.js production server. ESLint, strict TypeScript, production build and Ruff passed.
+**150 dashboard unit tests**, **14 worker tests**, **229 PostgreSQL assertions** and
+**337 production HTTP assertions** passed across Phases 1–5 (20 + 74 + 65 + 82 + 96).
+The worker health and read-only database probes passed. The foundation HTTP suite also
+scanned the production client output for Supabase credentials.
+
+New tests cover factual package regeneration, file integrity, current eligibility, stale
+sources/reviews, pause policy, simultaneous request idempotency, a single active handoff,
+uncertain outcomes, explicit cancellation, future-time rejection, candidate-reported receipt
+provenance, direct history mutation denial, cross-owner privacy and actual Auth cascades.
+An active claim remains visible beyond the latest 30 history entries. The mock API suite
+covers correlated receipts, bare HTTP 200, mismatches, timeouts, rate limits/authentication,
+policy changes after reservation and audit-storage failures before/after dispatch. No
+external provider request or employer form submission occurs in these tests.
+
+Production Chromium passed **17 checks** covering the hydrated handoff workflow, paused-form
+input preservation, controls refreshing after save, uncertain-outcome guidance, confirmed
+cancellation, replacement handoffs, reported receipts and tracker synchronization. The 375px
+mobile screenshot was inspected; no horizontal overflow or browser runtime error occurred.
+The private harness was corrected to open each source-evidence disclosure and use the form's
+alert role during validation. The browser harness/screenshots stay in ignored `.local/`;
+its cloud-supplied runtime is not a CI dependency. All synthetic accounts/files were removed.
+
+The reusable Phase 5 startup draft was saved with install/network/credential settings
+preserved. Review and save in environment settings, then publish to activate it; publication
+and restoration in a new task are unverified. GitHub Actions now includes Phase 5 HTTP tests;
+remote execution is not claimed. No new dependency or credential is required. No live API
+adapter or production API AttemptStore is configured because authorized platform access is
+unavailable. The supported route is the candidate-operated official form. Scheduler, daily
+quota enforcement and background dispatch remain Phase 6. Read PHASE5.md for commands,
+important files, the full verification walkthrough and limitations.
+
+The Phase 4 results below describe its earlier release.
+
 Phase 4 was validated in this cloud machine on **13 October 2026**. The production build,
 strict TypeScript, ESLint and Ruff passed. The suite includes **104 dashboard unit tests**,
 **14 worker tests**, **183 PostgreSQL assertions** and **241 production HTTP assertions**

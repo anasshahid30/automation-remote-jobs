@@ -41,7 +41,7 @@ jobs:
       - name: Read-only database health
         run: python main.py --check-database
         working-directory: worker
-      - name: Production HTTP regression workflows (Phases 1–3)
+      - name: Production HTTP regression workflows (Phases 1–4)
         shell: bash
         run: |
           set -euo pipefail
@@ -56,3 +56,4 @@ jobs:
           python scripts/smoke_local.py
           python scripts/smoke_phase2.py
           python scripts/smoke_phase3.py
+          python scripts/smoke_phase4.py

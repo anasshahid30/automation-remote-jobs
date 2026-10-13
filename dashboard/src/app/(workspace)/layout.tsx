@@ -41,6 +41,7 @@ export default async function WorkspaceLayout({
               ["/review", "Review queue"],
               ["/applications", "Applications"],
               ["/resumes", "Resumes"],
+              ["/answers", "Verified answers"],
               ["/settings", "Settings"],
             ].map(([href, label]) => (
               <Link

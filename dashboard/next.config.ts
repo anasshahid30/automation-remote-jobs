@@ -3,6 +3,7 @@ import path from "node:path";
 
 const config: NextConfig = {
   poweredByHeader: false,
+  serverExternalPackages: ["unpdf"],
   turbopack: { root: path.resolve(process.cwd()) },
   experimental: {
     serverActions: { bodySizeLimit: "11mb" },

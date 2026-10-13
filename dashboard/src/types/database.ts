@@ -107,6 +107,64 @@ export type Database = {
           },
         ];
       };
+      application_packages: {
+        Row: {
+          answer_snapshot: NonNullable<Json>;
+          application_id: string;
+          content: NonNullable<Json>;
+          created_at: string;
+          facts_updated_at: string;
+          id: string;
+          job_updated_at: string;
+          profile_updated_at: string;
+          request_id: string;
+          resume_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          answer_snapshot: NonNullable<Json>;
+          application_id: string;
+          content: NonNullable<Json>;
+          created_at?: string;
+          facts_updated_at: string;
+          id?: string;
+          job_updated_at: string;
+          profile_updated_at: string;
+          request_id: string;
+          resume_id: string;
+          user_id: string;
+        };
+        Update: {
+          answer_snapshot?: NonNullable<Json>;
+          application_id?: string;
+          content?: NonNullable<Json>;
+          created_at?: string;
+          facts_updated_at?: string;
+          id?: string;
+          job_updated_at?: string;
+          profile_updated_at?: string;
+          request_id?: string;
+          resume_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "application_packages_application_id_user_id_fkey";
+            columns: ["application_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "applications";
+            referencedColumns: ["id", "user_id"];
+          },
+          {
+            foreignKeyName: "application_packages_resume_id_user_id_fkey";
+            columns: ["resume_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "resumes";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
       applications: {
         Row: {
           answers: NonNullable<Json>;
@@ -565,6 +623,72 @@ export type Database = {
         };
         Relationships: [];
       };
+      package_reviews: {
+        Row: {
+          id: string;
+          package_id: string;
+          reviewed_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          id?: string;
+          package_id: string;
+          reviewed_at?: string;
+          user_id: string;
+        };
+        Update: {
+          id?: string;
+          package_id?: string;
+          reviewed_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "package_reviews_package_id_user_id_fkey";
+            columns: ["package_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "application_packages";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
+      resume_facts: {
+        Row: {
+          resume_id: string;
+          text_content: string;
+          updated_at: string;
+          user_id: string;
+          verified_at: string | null;
+          verified_by_candidate: boolean;
+        };
+        ComputedFields: never;
+        Insert: {
+          resume_id: string;
+          text_content: string;
+          updated_at?: string;
+          user_id: string;
+          verified_at?: string | null;
+          verified_by_candidate?: boolean;
+        };
+        Update: {
+          resume_id?: string;
+          text_content?: string;
+          updated_at?: string;
+          user_id?: string;
+          verified_at?: string | null;
+          verified_by_candidate?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "resume_facts_resume_id_user_id_fkey";
+            columns: ["resume_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "resumes";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
       resumes: {
         Row: {
           created_at: string;
@@ -731,12 +855,30 @@ export type Database = {
       };
     };
     Functions: {
+      answer_version_snapshot: {
+        Args: Record<PropertyKey, never>;
+        Returns: Json;
+      };
       consume_action_budget: { Args: { p_action: string }; Returns: boolean };
       dashboard_metrics: { Args: Record<PropertyKey, never>; Returns: Json };
       database_health: { Args: Record<PropertyKey, never>; Returns: string };
       import_jobs: { Args: { p_jobs: Json }; Returns: Json };
       local_time_to_utc: { Args: { p_value: string }; Returns: string };
       normalize_job_url: { Args: { p_url: string }; Returns: string };
+      record_application_package: {
+        Args: {
+          p_answer_snapshot: Json;
+          p_application_id: string;
+          p_application_updated_at: string;
+          p_content: Json;
+          p_facts_updated_at: string;
+          p_job_updated_at: string;
+          p_profile_updated_at: string;
+          p_request_id: string;
+          p_resume_id: string;
+        };
+        Returns: string;
+      };
       record_job_screening: {
         Args: {
           p_job_id: string;
@@ -747,6 +889,10 @@ export type Database = {
           p_review: Json;
         };
         Returns: string;
+      };
+      review_application_package: {
+        Args: { p_application_updated_at: string; p_package_id: string };
+        Returns: undefined;
       };
       select_resume_master: {
         Args: { p_resume_id: string };

@@ -24,7 +24,7 @@ worker/.venv/bin/python -m pip install -r worker/requirements.txt
 ```
 
 The dashboard runs without Supabase configuration, but sign-in is disabled and the database
-probe cannot report success. No AI or job-platform credentials are required for ordinary Phase 3 workflows.
+probe cannot report success. No AI or job-platform credentials are required for ordinary Phases 1–4 workflows.
 
 ## Local Supabase (recommended first)
 
@@ -77,6 +77,7 @@ npm run db:test
 worker/.venv/bin/python scripts/smoke_local.py
 worker/.venv/bin/python scripts/smoke_phase2.py
 worker/.venv/bin/python scripts/smoke_phase3.py
+worker/.venv/bin/python scripts/smoke_phase4.py
 ```
 
 The smoke test requires the dashboard on port 3000, a completed production build for the

@@ -2,11 +2,11 @@
 
 A personal remote-job application workspace, implemented in small, verifiable stages.
 
-**Current stage: Phase 3 import and screening.** Import actual listings individually or in
-batches, deduplicate source identities, review exact source quotations, and evaluate jobs
-against your profile and verified master-resume skills. Track eligibility, match factors,
-uncertainty and outdated checks. Optional AI suggests classification fields for your review.
-Profile settings, private resumes and the application CRM remain available.
+**Current stage: Phase 4 application preparation.** Select the matching role resume,
+extract and verify its text, prepare a company-specific cover letter and a tailored resume
+from exact source excerpts, and select verified screening answers. Preview private immutable
+document versions, resolve unanswered questions, then explicitly review a package before
+applying it to your tracker. Earlier import, screening, settings and CRM workflows remain available.
 Automation is paused.
 
 Start with [macOS setup](docs/SETUP.md). Read [validation results](docs/VALIDATION.md),
@@ -27,10 +27,10 @@ Real contact details and city must be entered by the candidate. Unknown internat
 eligibility must be reviewed; a remote label alone is insufficient.
 
 After pulling updates, run `npm run db:migrate`, then `npm run dev`. Follow the
-[Phase 2 walkthrough](docs/PHASE2.md) and [Phase 3 workflow](docs/PHASE3.md)
-after signing in. Existing environment files and
+[Phase 2 walkthrough](docs/PHASE2.md), [Phase 3 workflow](docs/PHASE3.md)
+and [Phase 4 preparation](docs/PHASE4.md) after signing in. Existing environment files and
 uploaded documents are preserved; no database reset is needed.
 
 Manual submission reports are labelled as your reports. Saving or approving a record
-does not submit anything to an employer. Phase 4 will add truthful application
-generation; authorized submission and scheduling come later.
+does not submit anything to an employer. Preparation uses factual, deterministic source excerpts
+and needs no AI key. Authorized submission adapters and scheduling come later.

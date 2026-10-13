@@ -30,6 +30,7 @@ export default async function ApplicationDetails({
   const [
     { data: resumes, error: resumeError },
     { data: events, error: eventError },
+    { data: packages, error: packageError },
   ] = await Promise.all([
     client
       .from("resumes")
@@ -43,8 +44,15 @@ export default async function ApplicationDetails({
       .eq("user_id", user.id)
       .order("occurred_at", { ascending: false })
       .limit(50),
+    client
+      .from("application_packages")
+      .select("id,created_at")
+      .eq("application_id", id)
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(20),
   ]);
-  if (resumeError || eventError)
+  if (resumeError || eventError || packageError)
     throw new Error("Application details could not be loaded.");
   const timezone = profile?.timezone ?? "Asia/Karachi";
   const { data: screening, error: screeningError } = await client
@@ -79,6 +87,9 @@ export default async function ApplicationDetails({
         <Link href={`/jobs/${app.job_id}`} className="button-secondary">
           Saved job details
         </Link>
+        <Link href={`/applications/${id}/prepare`} className="button-secondary">
+          Prepare application package
+        </Link>
         {app.resume_id && (
           <Link
             href={`/resumes/${app.resume_id}/file`}
@@ -98,6 +109,28 @@ export default async function ApplicationDetails({
           {app.jobs.description}
         </p>
       </details>
+      <section className="panel mb-6">
+        <h2 className="text-xl font-semibold">Document versions</h2>
+        {!packages.length && (
+          <p className="mt-4">No application packages generated yet.</p>
+        )}
+        <ol className="mt-4 space-y-3">
+          {packages.map((pack) => (
+            <li key={pack.id}>
+              <Link
+                className="underline"
+                href={`/applications/${id}/packages/${pack.id}`}
+              >
+                Preview version {pack.id.slice(0,8)} · {formatDate(pack.created_at, timezone)}
+              </Link>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-4 text-sm text-slate-600">
+          Most recent 20 versions. Each private version retains its original
+          source snapshot.
+        </p>
+      </section>
       <section className="panel">
         <h2 className="mb-6 text-xl font-semibold">Update your record</h2>
         <FormPanel
@@ -135,7 +168,7 @@ export default async function ApplicationDetails({
             label="Your cover letter (optional)"
             value={app.cover_letter}
             maxLength={20000}
-            help="Enter truthful text you prepared. This phase does not generate or submit it."
+            help="Enter truthful text or apply a reviewed application package. Saving this record does not submit it."
           />
           <TextArea
             name="notes"

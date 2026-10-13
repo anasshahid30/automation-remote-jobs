@@ -1,5 +1,34 @@
 # Validation
 
+Phase 4 was validated in this cloud machine on **13 October 2026**. The production build,
+strict TypeScript, ESLint and Ruff passed. The suite includes **104 dashboard unit tests**,
+**14 worker tests**, **183 PostgreSQL assertions** and **241 production HTTP assertions**
+across Phases 1–4 (20 + 74 + 65 + 82). The Phase 4 HTTP suite was rerun after browser-driven
+fixes; all checks use isolated synthetic local accounts and clean up their data/files.
+
+New coverage includes correct role master selection, source-grounded document generation,
+preservation of the full resume, unsupported qualification/metric rejection, exact verified
+answer matching, conflicting/unverified answers, mandatory sensitive review, real PDF/DOCX/TXT
+server extraction, snapshot staleness, concurrent package idempotency, private attachment
+downloads, immutable versions, cross-owner denial, transactional candidate review and no
+fabricated submission. Changes to resume text and the answer library invalidate review.
+
+Production Chromium passed **18 checks** across the full preparation workflow, candidate verification,
+unanswered sponsorship, library updates, stale/new versions, downloads, explicit review,
+mobile preview and version history. A browser test caught attachment links leaving a client
+navigation pending; native download links avoid that and permit the subsequent review action.
+Screenshots and harnesses stay private in ignored `.local/`; the browser runtime is supplied
+by this cloud machine and is not a CI dependency.
+
+The reusable Phase 4 `start_skill` is saved, with installation, networking and existing secret
+requirements preserved. Publication and restoration in a new task remain unverified.
+GitHub Actions includes the Phase 4 workflow; remote CI execution is not claimed. Generation
+is deterministic and extractive, with TXT exports: no live AI generation, OCR, or formatted
+PDF/DOCX export is implemented. No hosted deployment, live sources, employer submission
+adapters or scheduler were run. Read PHASE4.md for usage and boundaries.
+
+The Phase 3 results below describe its earlier release.
+
 Phase 3 was validated in this cloud machine on **13 October 2026** against local
 Supabase PostgreSQL 17. Phases 1 and 2 remain in the regression suite.
 

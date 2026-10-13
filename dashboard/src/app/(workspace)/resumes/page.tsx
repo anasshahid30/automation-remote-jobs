@@ -19,7 +19,7 @@ export default async function Resumes() {
       <h1 className="page-title">Your resume library</h1>
       <p className="mt-3 mb-8 text-slate-600">
         Keep a master for each role and preserve every uploaded version. Your
-        files are private. No tailoring or AI rewriting runs in this phase.
+        files are private. Verify extracted text to prepare truthful application packages.
       </p>
       <div className="grid gap-4 md:grid-cols-3">
         {roles.map((role) => {
@@ -140,6 +140,7 @@ export default async function Resumes() {
                     )}
                   </div>
                   <div className="flex flex-wrap gap-3">
+                    <Link href={`/resumes/${resume.id}/text`} className="button-secondary">Verify resume text</Link>
                     <Link
                       href={`/resumes/${resume.id}/file`}
                       target="_blank"

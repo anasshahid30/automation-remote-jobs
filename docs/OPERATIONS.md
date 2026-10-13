@@ -1,4 +1,4 @@
-# Phase 3 operations
+# Phase 4 operations
 
 From the existing repository checkout:
 
@@ -24,7 +24,7 @@ The worker is a CLI that exits after its diagnostic command:
 ```
 
 Exit 0 means the selected check passed; 1 means not configured/unavailable; 2 means invalid
-configuration. There is no background automation service to start in Phase 3.
+configuration. There is no background automation service to start in Phase 4.
 
 No live sources are connected and no applications are submitted. The candidate preference
 default is paused and the worker has no executable discovery/submission route. Leave this
@@ -43,5 +43,11 @@ checks expire after seven days (earlier for old FX quotes); changed facts invali
 Use the Review queue and record new candidate-checked quotations.
 
 GitHub Actions defines lint/types/unit/build, local Supabase migrations/SQL assertions,
-worker checks and Phases 1–3 production HTTP workflows. CI creates/deletes isolated test
+worker checks and Phases 1–4 production HTTP workflows. CI creates/deletes isolated test
 accounts; no hosted migration, real candidate update or employer submission is performed.
+
+Phase 4 migrations add private verified resume transcripts, immutable application packages,
+version-aware review and answer mutation guards. Generated documents are authenticated TXT
+downloads from database snapshots. Resume extraction, source review, package generation and
+candidate approval run as bounded server actions. Unanswered questions and changed inputs
+block package review; unknown eligibility retains Needs review. See PHASE4.md.

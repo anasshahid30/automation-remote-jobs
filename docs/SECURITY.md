@@ -51,6 +51,23 @@ deployment secrets and production Auth rate limits before exposing the applicati
 
 ## Phase 3 boundaries
 
+Phase 4 adds private factual preparation; see PHASE4.md. Resume extraction never verifies
+claims. Only candidate-verified text can generate a package. The generator quotes source
+text unchanged and makes no external model request with candidate data. DOCX extraction is
+bounded and does not unpack files; PDF extraction does not render pages or execute document
+scripts. Scanned/oversized text requires a manual transcript. Generated attachments require
+fresh Auth, an owner-filtered package lookup and no-store headers. Package snapshots cannot
+be updated or individually deleted by authenticated clients. No public generated-document
+bucket or permanent unauthenticated URL exists.
+
+Question matching is exact after case/punctuation normalization, without dynamic regexes.
+Unverified, conflicting and unknown answers cannot become affirmative legal claims. All
+non-contact library questions and sensitive categories require per-employer candidate review.
+Unanswered or stale packages cannot be reviewed; review is a local document action, not
+permission or proof of an external submission. The existing manual tracker can still record
+actual candidate-reported outcomes. Future adapters must independently validate current
+inputs; owner-written Data API metadata is not a trusted provider assertion.
+
 Manual import never fetches arbitrary URLs. Batch fields are whitelisted and bounded.
 Normalized per-owner identities and database unique indexes prevent concurrent duplicate
 writes; title/company similarity is advisory and never merges records automatically.

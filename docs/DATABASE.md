@@ -118,3 +118,24 @@ adds eligible, needs-review and unassessed job counts without fabricating verifi
 Auth cascades invoke a locked-down trigger-only definer for invalidation; it derives owner
 identity from the modified table row and skips deleted profiles. No broad Auth-role grants
 were added. The internal action budget now includes 10 classifier attempts/hour.
+
+## Phase 4 additions
+
+`resume_facts` stores an editable candidate-verified transcript per owned immutable resume.
+Extraction writes an unverified draft; explicit verification records the current timestamp.
+`application_packages` is append-only to authenticated users and snapshots its owned application,
+original resume version, engine output, source facts and input revisions. `package_reviews`
+records historical candidate review without rewriting a package. Composite owner foreign keys,
+RLS and explicit grants prevent cross-account references or private text access.
+
+`record_application_package` locks job/profile/application inputs, compares transcript and
+answer-library revisions, and writes the immutable package plus audit event transactionally.
+A unique owner/request ID makes concurrent retries return one version. `review_application_package`
+rejects stale snapshots, unanswered questions and already submitted/integration records. It
+copies reviewed documents into the tracker and preserves Needs review unless the current
+screening summary is eligible. Preparation never supplies a submission confirmation.
+Sensitive answer writes cannot disable review by labeling the question Routine. Text/answer
+edits serialize with package writes; the answer-delete trigger is a revoked, trigger-only
+definer to handle Auth cascades without broad permissions. Candidate-authored Data API
+content is not independent provider verification: future submission adapters must recompute
+eligibility and validate factual content rather than trust stored owner-writable labels.

@@ -1,7 +1,7 @@
-# Phase 3 architecture
+# Phase 4 architecture
 
-This is a personal remote-job CRM with manual import and evidence-based screening. No live job sources, document generation,
-submission adapters, or scheduler are implemented yet. There is no FastAPI service because
+This is a personal remote-job CRM with manual import, evidence-based screening and truthful
+document preparation. No live job sources, submission adapters, or scheduler are implemented yet. There is no FastAPI service because
 the worker does not need an HTTP interface at this stage.
 
 - `dashboard/`: Next.js App Router, React server components, strict TypeScript, Tailwind.
@@ -27,7 +27,7 @@ worker database credential is a diagnostic configuration, not a submission ident
 1. Foundation: complete.
 2. Candidate profile, CRM, private resume upload UI, and real dashboard statistics: complete.
 3. Manual import, normalized deduplication, deterministic eligibility, optional AI classification and evidence review: complete.
-4. Truthful document generation and verified answer selection.
+4. Truthful document generation and verified answer selection: complete (extractive generation).
 5. Permitted submission adapters, mocked confirmation tests, idempotency and dry runs.
 6. Scheduling, concurrency limits, timezone-aware quotas, follow-ups and monitoring.
 
@@ -36,6 +36,15 @@ are implemented. Current tests validate configuration, authentication, candidate
 document validation, CRUD, schema invariants, audit transactions and owner isolation.
 Phase 3 also validates deterministic screening, concurrent imports, stale evaluations and mocked
 classification. Submission-engine tests remain for later phases.
+
+Phase 4's pure TypeScript preparation engine emits unchanged verified resume excerpts,
+company/role-specific cover letters, and exact verified answers. `unpdf` pins the bundled
+Mozilla PDF.js parser; DOCX extraction inflates only a bounded `word/document.xml` member.
+Candidate verification is separate from extraction. PostgreSQL RPCs bind packages to job,
+profile, resume-text and answer-library versions, serialize preparation retries, and audit
+review transactionally. Documents are generated as TXT from private immutable JSON snapshots;
+there is no duplicate public storage copy. The private file handler verifies Auth and RLS on
+every request. No AI provider receives candidate text in this workflow.
 
 Local Docker containers are development services. Docker volumes are not assumed to
 survive a cloud snapshot. Future tasks must start services and inspect migration status.

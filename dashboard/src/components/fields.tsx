@@ -60,6 +60,7 @@ export function TextField({
 }
 export function TextArea({
   name,
+  id,
   label,
   value,
   help,
@@ -67,6 +68,7 @@ export function TextArea({
   maxLength = 10000,
 }: {
   name: string;
+  id?: string;
   label: string;
   value?: string | null;
   help?: string;
@@ -74,36 +76,38 @@ export function TextArea({
   maxLength?: number;
 }) {
   return (
-    <Field name={name} label={label} help={help}>
+    <Field name={id ?? name} label={label} help={help}>
       <textarea
         className="input min-h-28"
-        id={name}
+        id={id ?? name}
         name={name}
         defaultValue={value ?? ""}
         rows={5}
         required={required}
         maxLength={maxLength}
-        aria-describedby={help ? `${name}-help` : undefined}
+        aria-describedby={help ? `${id ?? name}-help` : undefined}
       />
     </Field>
   );
 }
 export function SelectField({
   name,
+  id,
   label,
   value,
   options,
 }: {
   name: string;
+  id?: string;
   label: string;
   value?: string | null;
   options: readonly (readonly [string, string])[];
 }) {
   return (
-    <Field name={name} label={label}>
+    <Field name={id ?? name} label={label}>
       <select
         className="input"
-        id={name}
+        id={id ?? name}
         name={name}
         defaultValue={value ?? ""}
       >

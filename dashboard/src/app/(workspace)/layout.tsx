@@ -40,6 +40,7 @@ export default async function WorkspaceLayout({
               ["/jobs", "Jobs"],
               ["/review", "Review queue"],
               ["/applications", "Applications"],
+              ["/schedule", "Schedule & follow-ups"],
               ["/resumes", "Resumes"],
               ["/answers", "Verified answers"],
               ["/settings", "Settings"],
@@ -54,7 +55,7 @@ export default async function WorkspaceLayout({
             ))}
           </nav>
           <p className="mt-8 hidden rounded-lg border border-emerald-900/10 p-4 text-sm leading-6 text-slate-600 lg:block">
-            Automation is paused.
+            External submission APIs are disabled.
             <br />
             Track your progress and complete applications through official
             forms.

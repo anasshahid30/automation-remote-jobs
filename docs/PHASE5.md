@@ -3,8 +3,8 @@
 The supported route is human-assisted: you complete the employer's official form yourself.
 No employer-approved submission API access is configured. The provider interface and mocked
 API tests are ready; no employer was contacted during development or testing. Live API
-integration remains dependent on authorized provider access. Scheduling, bounded dispatch
-concurrency, daily quota enforcement and retry scheduling remain Phase 6.
+integration remains dependent on authorized provider access. See PHASE6.md for local scheduling, bounded processing, daily handoff quotas,
+follow-up reminders and retry policies. Live API dispatch is still unconfigured.
 
 ## Run on macOS
 

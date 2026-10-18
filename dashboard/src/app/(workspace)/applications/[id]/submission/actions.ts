@@ -76,6 +76,11 @@ export async function checkSubmission(
       p_snapshot: snapshot,
       p_report: report,
     });
+    if (error?.code === "P0001")
+      return {
+        message:
+          "Daily handoff limit reached. Resolve pending outcomes or wait for the next day in your profile timezone.",
+      };
     if (error || !runId)
       return {
         message:
@@ -112,6 +117,7 @@ export async function setSubmissionPause(
       );
     if (error) return { message: "Pause setting not saved." };
     revalidatePath("/applications", "layout");
+    revalidatePath("/schedule");
     return {
       ok: true,
       message: paused

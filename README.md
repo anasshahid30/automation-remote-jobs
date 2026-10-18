@@ -2,12 +2,11 @@
 
 A personal remote-job application workspace, implemented in small, verifiable stages.
 
-**Current stage: Phase 5 validated human-assisted handoffs.** Check a reviewed application
-package against current eligibility, verified facts, private file integrity and previous
-attempts. Enable the global/source handoff controls, complete the official employer form
-yourself, then record its actual outcome. Uncertain outcomes block another handoff. The
-submission adapter contract is tested with a mock provider; no live API access is configured.
-Earlier import, screening, preparation, settings and CRM workflows remain available.
+**Current stage: Phase 6 scheduling and follow-ups.** Schedule local package-readiness
+reviews and follow-up reminders, enforce timezone-aware handoff limits across concurrent
+requests, and track actual employer responses. A restricted Python worker processes a
+private queue with bounded concurrency and retries. Global/source pauses apply to both
+background work and new manual handoffs. No live submission API or employer messaging is connected.
 
 Start with [macOS setup](docs/SETUP.md). Read [validation results](docs/VALIDATION.md),
 [architecture](docs/ARCHITECTURE.md), [database](docs/DATABASE.md),
@@ -16,7 +15,7 @@ Start with [macOS setup](docs/SETUP.md). Read [validation results](docs/VALIDATI
 | Path | Contents |
 | --- | --- |
 | `dashboard/` | Authenticated settings, resumes, jobs, applications and dashboard; typed server-only Supabase client and validation tests |
-| `worker/` | Python diagnostic CLI, Pydantic settings, read-only database probe, unit tests, pinned dependencies |
+| `worker/` | Restricted task scheduler, diagnostics, validated settings and worker tests |
 | `supabase/` | Additive migrations, private storage policies, transactional audit and RLS/constraint tests |
 | `scripts/` | Safe local setup/account helpers and HTTP integration smoke checks |
 | `docs/` | Setup, architecture, data/security decisions, operations, validation |
@@ -28,9 +27,9 @@ eligibility must be reviewed; a remote label alone is insufficient.
 
 After pulling updates, run `npm run db:migrate`, then `npm run dev`. Follow the
 [Phase 2 walkthrough](docs/PHASE2.md), [Phase 3 workflow](docs/PHASE3.md)
-[Phase 4 preparation](docs/PHASE4.md) and [Phase 5 handoffs](docs/PHASE5.md) after signing in. Existing environment files and
+[Phase 4 preparation](docs/PHASE4.md), [Phase 5 handoffs](docs/PHASE5.md) and [Phase 6 scheduling](docs/PHASE6.md) after signing in. Existing environment files and
 uploaded documents are preserved; no database reset is needed.
 
 Manual submission reports are labelled as your reports. Saving or approving a record
 does not submit anything to an employer. Preparation uses factual, deterministic source excerpts
-and needs no AI key. Live API dispatch awaits employer-approved access. Scheduling and daily quotas remain Phase 6.
+and needs no AI key. Live API dispatch awaits employer-approved access. Background scheduling is opt-in and does not send applications.

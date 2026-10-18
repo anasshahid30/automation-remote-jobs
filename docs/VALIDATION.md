@@ -1,5 +1,43 @@
 # Validation
 
+Phase 6 was validated on **18–19 October 2026 (Asia/Karachi)** against local Supabase
+PostgreSQL 17 and the Next.js production server. ESLint, strict TypeScript, production build
+and Ruff passed. **150 dashboard unit tests**, **33 worker tests**, **302 PostgreSQL
+assertions** and **436 production HTTP assertions** passed across Phases 1–6
+(20 + 74 + 65 + 82 + 96 + 99). The earlier Phase 1–5 workflows were rerun against Phase 6.
+No dependency or lockfile change was required.
+
+New coverage exercises restricted worker identity and denied direct candidate-table access,
+owner privacy, actual concurrent database claims, account concurrency across connections,
+source/global pause and pause after claim, bounded retries, expired/stale leases, lost
+completion responses and graceful shutdown. Real concurrent handoffs at a limit of one
+reserve exactly one slot. SQL covers profile-local midnight/DST, unresolved carry-over,
+receipt reconciliation, cancelled reminder date restoration, response request conflicts and
+account deletion. Scheduled readiness checks neither create handoffs nor use quota.
+Response and follow-up forms are tested through the actual production server.
+
+Production Chromium passed **20 checks**, including fixture cleanup, for the hydrated
+schedule workflow: disabled defaults, real background heartbeat, readiness notification,
+candidate-reported receipt and budget, due follow-up dismissal, actual interview reporting,
+global pause and stopped-worker status. The 375px mobile layout has no horizontal overflow;
+its screenshot was inspected and no browser runtime errors occurred. The private harness
+was corrected to check the resulting Dismissed state after its form unmounts and to wait
+for streamed content after reload. An environment interruption stopped an earlier run;
+its synthetic account/files were cleaned before the successful rerun. The harness and
+screenshots remain in ignored `.local/`, using the cloud-provided Chromium runtime.
+
+Local services restarted without resetting data. Pending-migration replay, the existing
+restricted worker binding and non-overwriting worker configuration were verified. The
+Phase 6 startup draft was saved with installation/network/secret settings preserved;
+review/save and publication in environment settings are still required. A draft save does
+not verify publication or fresh-task restoration. GitHub Actions includes Phase 6, but
+remote CI execution is not claimed. Hosted worker provisioning, operating-system autostart,
+live submission APIs and employer messaging remain unverified/unconfigured. Follow-ups are
+local reminders, and official employer forms remain candidate-operated. See PHASE6.md for
+changed files, exact macOS commands, verification steps and current limits.
+
+The Phase 5 results below describe its earlier release.
+
 Phase 5 was validated on **13 October 2026** against local Supabase PostgreSQL 17 and
 the Next.js production server. ESLint, strict TypeScript, production build and Ruff passed.
 **150 dashboard unit tests**, **14 worker tests**, **229 PostgreSQL assertions** and

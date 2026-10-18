@@ -79,6 +79,7 @@ worker/.venv/bin/python scripts/smoke_phase2.py
 worker/.venv/bin/python scripts/smoke_phase3.py
 worker/.venv/bin/python scripts/smoke_phase4.py
 worker/.venv/bin/python scripts/smoke_phase5.py
+worker/.venv/bin/python scripts/smoke_phase6.py
 ```
 
 The smoke test requires the dashboard on port 3000, a completed production build for the
@@ -133,3 +134,10 @@ Phase 5 requires no new dependency or credential. Apply pending migrations with
 `npm run db:migrate` and follow [the handoff walkthrough](PHASE5.md). No employer-approved
 API access was available during setup, so the supported route is the candidate-operated
 official form. API policy/receipt behavior is tested only with a local mock.
+
+Phase 6 adds an optional local scheduler with a **separate restricted database binding**.
+After `npm run db:migrate`, run `worker/.venv/bin/python scripts/configure_scheduler.py`
+from the checkout. It writes private ignored `worker/.env.scheduler` without changing
+existing configuration. Follow [PHASE6.md](PHASE6.md) for the worker command, opt-in controls,
+verification and hosted-operator requirements. Keep other workers stopped and real accounts'
+background checks disabled during the Phase 6 integration suite. No new package is required.

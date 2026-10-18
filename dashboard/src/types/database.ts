@@ -762,6 +762,146 @@ export type Database = {
           },
         ];
       };
+      scheduled_tasks: {
+        Row: {
+          application_id: string;
+          attempts: number;
+          created_at: string;
+          due_at: string;
+          id: string;
+          kind: string;
+          lease_token: string | null;
+          lease_until: string | null;
+          next_attempt_at: string;
+          request_id: string;
+          result_code: string | null;
+          state: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          application_id: string;
+          attempts?: number;
+          created_at?: string;
+          due_at: string;
+          id?: string;
+          kind: string;
+          lease_token?: string | null;
+          lease_until?: string | null;
+          next_attempt_at: string;
+          request_id?: string;
+          result_code?: string | null;
+          state?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          application_id?: string;
+          attempts?: number;
+          created_at?: string;
+          due_at?: string;
+          id?: string;
+          kind?: string;
+          lease_token?: string | null;
+          lease_until?: string | null;
+          next_attempt_at?: string;
+          request_id?: string;
+          result_code?: string | null;
+          state?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_tasks_application_id_user_id_fkey";
+            columns: ["application_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "applications";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
+      scheduler_attempts: {
+        Row: {
+          attempt: number;
+          finished_at: string | null;
+          id: string;
+          outcome: string | null;
+          started_at: string;
+          task_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          attempt: number;
+          finished_at?: string | null;
+          id: string;
+          outcome?: string | null;
+          started_at?: string;
+          task_id: string;
+          user_id: string;
+        };
+        Update: {
+          attempt?: number;
+          finished_at?: string | null;
+          id?: string;
+          outcome?: string | null;
+          started_at?: string;
+          task_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "scheduler_attempts_task_id_user_id_fkey";
+            columns: ["task_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "scheduled_tasks";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
+      scheduler_settings: {
+        Row: {
+          enabled: boolean;
+          max_concurrency: number;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          enabled?: boolean;
+          max_concurrency?: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          enabled?: boolean;
+          max_concurrency?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      scheduler_workers: {
+        Row: {
+          id: string;
+          last_seen: string;
+          status: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          id: string;
+          last_seen?: string;
+          status: string;
+        };
+        Update: {
+          id?: string;
+          last_seen?: string;
+          status?: string;
+        };
+        Relationships: [];
+      };
       source_accounts: {
         Row: {
           account_email_hint: string | null;
@@ -951,9 +1091,14 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: Json;
       };
+      claim_scheduled_task: { Args: Record<PropertyKey, never>; Returns: Json };
       consume_action_budget: { Args: { p_action: string }; Returns: boolean };
       dashboard_metrics: { Args: Record<PropertyKey, never>; Returns: Json };
       database_health: { Args: Record<PropertyKey, never>; Returns: string };
+      fail_scheduled_task: {
+        Args: { p_code: string; p_lease: string; p_task_id: string };
+        Returns: undefined;
+      };
       finish_submission_handoff: {
         Args: {
           p_applied_at?: string;
@@ -963,9 +1108,18 @@ export type Database = {
         };
         Returns: undefined;
       };
+      handoff_quota: { Args: Record<PropertyKey, never>; Returns: Json };
+      handoff_quota_for: {
+        Args: { p_at: string; p_owner: string };
+        Returns: Json;
+      };
       import_jobs: { Args: { p_jobs: Json }; Returns: Json };
       local_time_to_utc: { Args: { p_value: string }; Returns: string };
       normalize_job_url: { Args: { p_url: string }; Returns: string };
+      process_scheduled_task: {
+        Args: { p_lease: string; p_task_id: string };
+        Returns: string;
+      };
       record_application_package: {
         Args: {
           p_answer_snapshot: Json;
@@ -979,6 +1133,15 @@ export type Database = {
           p_resume_id: string;
         };
         Returns: string;
+      };
+      record_application_response: {
+        Args: {
+          p_application_id: string;
+          p_note: string;
+          p_request_id: string;
+          p_status: string;
+        };
+        Returns: undefined;
       };
       record_job_screening: {
         Args: {
@@ -1002,10 +1165,31 @@ export type Database = {
         };
         Returns: string;
       };
+      resolve_scheduled_task: {
+        Args: { p_action: string; p_task_id: string };
+        Returns: undefined;
+      };
       review_application_package: {
         Args: { p_application_updated_at: string; p_package_id: string };
         Returns: undefined;
       };
+      schedule_application_review: {
+        Args: {
+          p_application_id: string;
+          p_due_at: string;
+          p_request_id: string;
+        };
+        Returns: string;
+      };
+      schedule_follow_up: {
+        Args: { p_application_id: string; p_due_at: string };
+        Returns: undefined;
+      };
+      scheduler_heartbeat: {
+        Args: { p_status: string; p_worker_id: string };
+        Returns: undefined;
+      };
+      scheduler_metrics: { Args: Record<PropertyKey, never>; Returns: Json };
       select_resume_master: {
         Args: { p_resume_id: string };
         Returns: undefined;

@@ -157,3 +157,27 @@ account deletion still cascades all private records. SQL and real Auth API tests
 `submission_snapshot` is a revision fingerprint, not proof of externally verified facts.
 Stored owner-supplied reports remain advisory: future live adapters must compute trusted
 validation themselves rather than reuse browser-writable inputs or reports as permission.
+
+## Phase 6 additions
+
+Three additive migrations introduce private scheduler settings, tasks and attempt history,
+operational heartbeats, restricted processing capabilities and profile-local handoff quotas.
+Authenticated owners can read their queue but cannot directly rewrite state/leases/history.
+Owner RPCs enqueue bounded review work, schedule follow-ups, acknowledge/cancel tasks and
+record actual responses. Follow-up edits synchronize/cancel local reminders transactionally;
+restoring a previous date deliberately starts a fresh bounded cycle without erasing attempts.
+
+The `remote_jobs_scheduler` NOLOGIN role grants only four fixed worker RPCs. A separate local
+login is provisioned by the helper; neither the diagnostic connection nor a service-role key
+is used for runtime processing. `SKIP LOCKED`, owner serialization, a post-lock capacity
+recheck and lease tokens prevent concurrent overclaiming. Pauses are checked again before
+completion. Expired leases recover only idempotent local checks; submission runs are outside
+this queue. Transient failures back off and stop after three attempts. Historical errors
+are sanitized codes, not driver text or candidate content.
+
+Handoff allocation locks the owner and counts distinct actual completions today plus all
+unresolved handoffs, including carryover. Calendar boundaries use the profile IANA timezone;
+DST does not assume a 24-hour day. A completion shared by tracker and handoff counts once.
+The quota blocks new allocations but never blocks recording the actual outcome. Tests cover
+real concurrent worker logins and simultaneous different handoffs at the last daily slot.
+Auth deletion cascades private tasks/history; worker heartbeats contain no candidate data.

@@ -124,6 +124,9 @@ export default async function Submission({
         <Link href={`/applications/${id}`} className="button-secondary mt-4">
           Application record
         </Link>
+        <Link href="/schedule" className="button-secondary mt-4 ml-3">
+          Daily quota and schedule
+        </Link>
       </section>
       <section className="panel mb-6">
         <h2 className="text-xl font-semibold mb-4">Pause controls</h2>

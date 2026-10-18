@@ -37,11 +37,12 @@ jobs:
           npm run db:start
           npm run db:migrate
           npm run db:config
+      - run: python scripts/configure_scheduler.py
       - run: npm run db:test
       - name: Read-only database health
         run: python main.py --check-database
         working-directory: worker
-      - name: Production HTTP regression workflows (Phases 1–5)
+      - name: Production HTTP regression workflows (Phases 1–6)
         shell: bash
         run: |
           set -euo pipefail
@@ -58,3 +59,4 @@ jobs:
           python scripts/smoke_phase3.py
           python scripts/smoke_phase4.py
           python scripts/smoke_phase5.py
+          python scripts/smoke_phase6.py

@@ -107,6 +107,13 @@ export default async function ApplicationDetails({
           </Link>
         )}
       </div>
+      <p className="mb-6 text-sm text-slate-600">
+        Follow-up dates create local reminders.{" "}
+        <Link className="underline" href="/schedule">
+          Manage reminders and record actual responses
+        </Link>
+        .
+      </p>
       <details className="panel mb-6">
         <summary className="cursor-pointer font-semibold">
           Job description

@@ -1,4 +1,4 @@
-# Phase 5 operations
+# Phase 6 operations
 
 From the existing repository checkout:
 
@@ -24,7 +24,7 @@ The worker is a CLI that exits after its diagnostic command:
 ```
 
 Exit 0 means the selected check passed; 1 means not configured/unavailable; 2 means invalid
-configuration. There is no background automation service to start in Phase 5.
+configuration. The optional Phase 6 queue worker is a separate long-running CLI; see PHASE6.md.
 
 No live sources are connected and no applications are submitted. The candidate preference
 default is paused and the worker has no executable discovery/submission route. The Phase 5 manual
@@ -43,7 +43,7 @@ checks expire after seven days (earlier for old FX quotes); changed facts invali
 Use the Review queue and record new candidate-checked quotations.
 
 GitHub Actions defines lint/types/unit/build, local Supabase migrations/SQL assertions,
-worker checks and Phases 1–5 production HTTP workflows. CI creates/deletes isolated test
+worker checks and Phases 1–6 production HTTP workflows. CI creates/deletes isolated test
 accounts; no hosted migration, real candidate update or employer submission is performed.
 
 Phase 4 migrations add private verified resume transcripts, immutable application packages,
@@ -59,3 +59,16 @@ employer. Record actual outcomes even while paused. Never retry an uncertain out
 the candidate checks the employer receipt/history; cancel only after verifying no submission.
 Do not edit or delete attempt history to free a duplicate claim. No live submission secrets
 are needed or requested. The worker still has no dispatch loop.
+
+Phase 6 local worker setup: run `worker/.venv/bin/python scripts/configure_scheduler.py` once
+from the checkout after migrations. Preserve ignored `worker/.env.scheduler`. Start with
+`(cd worker && SCHEDULER_ENABLED=true .venv/bin/python main.py --scheduler)` in a persistent
+session. Enable background checks for the candidate, then resume global/source processing.
+The worker starts no HTTP service and sends no external messages/applications. Stop it using
+SIGINT/SIGTERM; only stop processes started by the current task. The Schedule page reports
+actual pulses and stopped/error states. Heartbeats become stale after two minutes.
+
+Only local queue tasks retry; never release an uncertain submission claim to make room.
+Investigate permanent errors privately, keep original history and reschedule deliberately.
+Tests must run without other worker processes or opted-in real accounts; the Phase 6 smoke
+suite checks these prerequisites. Restore services afterward only within the authorized scope.

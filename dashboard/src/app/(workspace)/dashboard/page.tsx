@@ -43,6 +43,9 @@ export default async function Dashboard() {
       <p className="mt-3 text-slate-600">
         Real records from your account. Daily totals use {metrics.timezone}.
       </p>
+      <Link className="button-secondary mt-5" href="/schedule">
+        Daily quota, schedule and follow-ups
+      </Link>
       {!profile && (
         <section className="panel mt-8 border-amber-200">
           <h2 className="font-semibold">Start with your candidate profile</h2>

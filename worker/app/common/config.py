@@ -6,14 +6,20 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore", hide_input_in_errors=True)
+    model_config = SettingsConfigDict(
+        env_file=(".env", ".env.scheduler"), extra="ignore", hide_input_in_errors=True
+    )
 
     database_url: SecretStr | None = None
     automation_enabled: bool = False
     daily_target: int = Field(default=30, ge=1, le=30)
     timezone: str = "Asia/Karachi"
+    scheduler_database_url: SecretStr | None = None
+    scheduler_enabled: bool = False
+    scheduler_concurrency: int = Field(default=2, ge=1, le=3)
+    scheduler_poll_seconds: int = Field(default=30, ge=30, le=60)
 
-    @field_validator("database_url", mode="before")
+    @field_validator("database_url", "scheduler_database_url", mode="before")
     @classmethod
     def validate_database_url(cls, value: str | SecretStr | None) -> str | SecretStr | None:
         if not value:

@@ -105,3 +105,17 @@ bare HTTP 200 responses and mismatched/missing/future/stale receipts, reserves b
 and retains claims after uncertain network or audit-storage failures. It performs no automatic
 retry. This is a contract for a future authorized integration, not a deployed submission service.
 Open official links are candidate-controlled navigation; the application does not fetch them.
+
+Phase 6 gives the worker a separate PostgreSQL identity with only narrow RPC execution.
+It has no direct candidate/resume table access, cannot call submission RPCs and has no
+employer or email client. Runtime checks reject privileged bindings. Hosted worker URLs must
+verify the server certificate using the system trust store. The local helper generates its
+own password privately, refuses hosted targets and never rotates an existing role silently.
+
+Owner-authenticated queue forms and response RPCs enforce ownership, bounds and request
+identity. The schedule path participates in session refresh and private/no-store responses.
+Task tokens guard stale completions; source/global pause checks and account concurrency
+limits apply across workers. Only idempotent local work retries. New handoff quotas do not
+invent receipt records or prevent truthful recording above the allocation limit. Error logs
+exclude raw database errors, credentials and candidate text. SQL/HTTP/worker tests cover the
+restricted login, cross-owner denial, pause races, lease recovery, retries and Auth cleanup.

@@ -7,7 +7,10 @@ export function readSupabaseConfig(env: Record<string, string | undefined>): Sup
   if (!url || !key) return null;
   let parsed: URL;
   try { parsed = new URL(url); } catch { throw new Error("Invalid Supabase URL configuration."); }
-  const local = ["localhost", "127.0.0.1"].includes(parsed.hostname);
+  const local = ["localhost", "127.0.0.1", "[::1]"].includes(parsed.hostname);
+  if (local && env.VERCEL === "1") {
+    throw new Error("Vercel requires a hosted Supabase URL, not a local database.");
+  }
   if (parsed.username || parsed.password || parsed.search || parsed.hash ||
       (parsed.pathname !== "/" && parsed.pathname !== "") ||
       (parsed.protocol !== "https:" && !(local && parsed.protocol === "http:"))) {

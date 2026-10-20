@@ -11,6 +11,8 @@ background work and new manual handoffs. No live submission API or employer mess
 Start with [macOS setup](docs/SETUP.md). Read [validation results](docs/VALIDATION.md),
 [architecture](docs/ARCHITECTURE.md), [database](docs/DATABASE.md),
 [security](docs/SECURITY.md) and [operations](docs/OPERATIONS.md).
+For public hosting, follow [Vercel deployment](docs/VERCEL.md). The dashboard needs a
+hosted Supabase project; scheduled processing needs a separate Python service.
 
 | Path | Contents |
 | --- | --- |

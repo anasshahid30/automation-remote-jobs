@@ -1,5 +1,27 @@
 # Validation
 
+Vercel deployment preparation was checked on **21 October 2026 (Asia/Karachi)**.
+ESLint, strict TypeScript and **154 dashboard tests** passed, including hosted deployment
+rejection of IPv4/IPv6 loopback database URLs. The production build passed with `VERCEL=1`
+and Supabase variables deliberately empty, so local credentials were not used by that build.
+The build was exercised against the local database: **94 HTTP assertions** from foundation
+and CRM passed (20 + 74), including private uploads and client credential scanning.
+Chromium passed **9 upload checks**, including cleanup: oversized/empty files fail browser
+validation, oversized files produce no upload request, a valid replacement clears the error
+and uploads successfully, and no browser runtime errors occur. Local uploads retain 10 MiB;
+the runtime selects 4 MiB on Vercel. Stored document limits are unchanged.
+
+A separate local production process with deployment mode enabled and no database variables
+passed four readiness checks: web health, visibly disabled sign-in, private-route redirects
+and an honest `not_configured` database response. These checks do **not** validate a hosted
+database or Vercel's infrastructure. No remote deployment or URL was created: hosted Supabase
+does not exist yet, Vercel authentication is absent, and the environment's egress proxy
+returned HTTP 403 for Vercel API requests. The cloud draft now includes `vercel.com` and
+`api.vercel.com`, a secure `VERCEL_TOKEN` requirement and deployment continuation notes.
+Review/save and publication are required; access after those changes is unverified.
+See [VERCEL.md](VERCEL.md) for exact deployment settings, database migration commands,
+public-app verification and separate worker hosting requirements.
+
 Phase 6 was validated on **18–19 October 2026 (Asia/Karachi)** against local Supabase
 PostgreSQL 17 and the Next.js production server. ESLint, strict TypeScript, production build
 and Ruff passed. **150 dashboard unit tests**, **33 worker tests**, **302 PostgreSQL

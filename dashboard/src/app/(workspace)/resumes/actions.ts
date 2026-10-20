@@ -3,7 +3,8 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { mutationContext } from "@/lib/workspace/auth";
-import { inspectDocument, MAX_RESUME_SIZE } from "@/lib/workspace/documents";
+import { inspectDocument } from "@/lib/workspace/documents";
+import { resumeUploadLimit } from "@/lib/workspace/upload-limit";
 import {
   failure,
   listText,
@@ -35,8 +36,9 @@ export async function uploadResume(
           "Save your candidate profile in Settings before uploading a resume.",
       };
     const file = form.get("file");
-    if (!(file instanceof File) || !file.size || file.size > MAX_RESUME_SIZE)
-      return { message: "Choose a resume file between 1 byte and 10 MiB." };
+    const uploadLimit = resumeUploadLimit();
+    if (!(file instanceof File) || !file.size || file.size > uploadLimit.bytes)
+      return { message: `Choose a resume file between 1 byte and ${uploadLimit.mib} MiB.` };
     const bytes = new Uint8Array(await file.arrayBuffer());
     let document;
     try {
@@ -44,7 +46,7 @@ export async function uploadResume(
     } catch {
       return {
         message:
-          "The resume file is invalid. Choose a PDF, UTF-8 text file, or DOCX up to 10 MiB.",
+          `The resume file is invalid. Choose a PDF, UTF-8 text file, or DOCX up to ${uploadLimit.mib} MiB.`,
       };
     }
     const id = randomUUID(),

@@ -4,9 +4,12 @@ import { roles, roleLabels } from "@/lib/workspace/schemas";
 import { formatDate } from "@/lib/workspace/format";
 import { Field, TextField, TextArea, SelectField } from "@/components/fields";
 import { FormPanel } from "@/components/form-panel";
+import { ResumeFileInput } from "@/components/resume-file-input";
+import { resumeUploadLimit } from "@/lib/workspace/upload-limit";
 import { selectMaster, uploadResume } from "./actions";
 
 export default async function Resumes() {
+  const uploadLimit = resumeUploadLimit();
   const { client, user, profile } = await profileContext();
   const { data: resumes, error } = await client
     .from("resumes")
@@ -79,17 +82,9 @@ export default async function Resumes() {
             <Field
               name="file"
               label="Resume file"
-              help="PDF, DOCX, or UTF-8 text; maximum 10 MiB. Files are stored without executing their contents."
+              help={`PDF, DOCX, or UTF-8 text; maximum ${uploadLimit.mib} MiB. Files are stored without executing their contents.`}
             >
-              <input
-                className="input"
-                id="file"
-                name="file"
-                type="file"
-                accept=".pdf,.docx,.txt"
-                required
-                aria-describedby="file-help"
-              />
+              <ResumeFileInput maxBytes={uploadLimit.bytes} />
             </Field>
             <TextArea
               name="skills"
